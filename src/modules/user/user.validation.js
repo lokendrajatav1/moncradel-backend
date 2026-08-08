@@ -13,7 +13,12 @@ const loginSchema = z.object({
   password: z.string().min(1, { message: 'Password is required' }),
 });
 
+const updateProfileSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters long' }).optional(),
+}).passthrough(); // passthrough allows role-specific fields like specialization, address, etc. to pass through
+
 module.exports = {
   registerSchema,
-  loginSchema
+  loginSchema,
+  updateProfileSchema
 };

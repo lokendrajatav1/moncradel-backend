@@ -64,6 +64,11 @@ const authenticateUser = async (email, password) => {
     throw new Error('Invalid credentials');
   }
 
+  // If user signed up via OTP, they won't have a password
+  if (!user.password) {
+    throw new Error('This account uses OTP login. Please login with your phone number, or reset your password to create one.');
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
   console.log('Password match:', isMatch);
   

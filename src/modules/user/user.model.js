@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [
         function() {
-          // Password is required only for these professional roles
-          return ['admin', 'doctor', 'kitchen'].includes(this.role);
+          // Password is required only for these professional roles (removed doctor to allow OTP login)
+          return ['admin', 'kitchen'].includes(this.role);
         },
         'Please add a password for this role'
       ],
