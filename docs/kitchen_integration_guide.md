@@ -5,41 +5,213 @@ This guide contains all the APIs required to build the **Kitchen PWA**.
 ### How to test:
 Import the `kitchen_complete_postman.json` file from your backend folder into Postman.
 
-### API List:
-- **POST** `/api/auth/register`
-- **POST** `/api/auth/login`
-- **POST** `/api/auth/send-otp`
-- **POST** `/api/auth/verify-otp`
-- **POST** `/api/auth/forgot-password`
-- **POST** `/api/auth/reset-password`
-- **GET** `/api/users/profile`
-- **PUT** `/api/users/profile`
-- **POST** `/api/meals`
-- **GET** `/api/meals`
-- **GET** `/api/meals/:id`
-- **PUT** `/api/meals/:id`
-- **DELETE** `/api/meals/:id`
-- **GET** `/api/orders`
-- **PATCH** `/api/orders/:id/status`
-- **GET** `/api/reviews`
-- **GET** `/api/reviews/:mealId`
-- **GET** `/api/earnings`
-- **POST** `/api/support`
-- **GET** `/api/support`
-- **PUT** `/api/support/:id/reply`
-- **PUT** `/api/support/:id/reply/:replyId`
-- **DELETE** `/api/support/:id/reply/:replyId`
-- **GET** `/api/nutrition-plans`
-- **GET** `/api/nutrition-plans/:babyId`
-- **GET** `/api/inventory`
-- **POST** `/api/inventory`
-- **PUT** `/api/inventory/:id`
-- **DELETE** `/api/inventory/:id`
-- **POST** `/api/hygiene`
-- **GET** `/api/hygiene`
-- **PUT** `/api/hygiene/:id`
-- **DELETE** `/api/hygiene/:id`
-- **POST** `/api/batches`
-- **GET** `/api/batches`
-- **PATCH** `/api/batches/:id/status`
-- **GET** `/api/settings`
+### API Details:
+
+### **POST** `/api/auth/register`
+**Example Request Body:**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "phone": "9876543210",
+  "role": "doctor"
+}
+```
+
+---
+
+### **POST** `/api/auth/login`
+**Example Request Body:**
+```json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+---
+
+### **POST** `/api/auth/send-otp`
+**Example Request Body:**
+```json
+{
+  "phone": "9876543210",
+  "role": "parent"
+}
+```
+
+---
+
+### **POST** `/api/auth/verify-otp`
+**Example Request Body:**
+```json
+{
+  "phone": "9876543210",
+  "otp": "1234"
+}
+```
+
+---
+
+### **POST** `/api/auth/forgot-password`
+**Example Request Body:**
+```json
+{
+  "email": "john@example.com"
+}
+```
+
+---
+
+### **POST** `/api/auth/reset-password`
+**Example Request Body:**
+```json
+{
+  "token": "token-from-email-link-here",
+  "otp": "1234",
+  "email": "john@example.com",
+  "password": "newpassword123",
+  "confirmPassword": "newpassword123"
+}
+```
+
+---
+
+### **GET** `/api/users/profile`
+
+---
+
+### **PUT** `/api/users/profile`
+**Example Request Body:**
+```json
+{
+  "name": "Updated Name",
+  "address": "123 Main St",
+  "specialization": "Pediatrician",
+  "vehicleNumber": "MH01AB1234",
+  "kitchenName": "Healthy Bites"
+}
+```
+
+---
+
+### **POST** `/api/meals`
+
+---
+
+### **GET** `/api/meals`
+
+---
+
+### **GET** `/api/meals/:id`
+
+---
+
+### **PUT** `/api/meals/:id`
+
+---
+
+### **DELETE** `/api/meals/:id`
+
+---
+
+### **GET** `/api/orders`
+
+---
+
+### **PATCH** `/api/orders/:id/status`
+**Example Request Body:**
+```json
+{
+  "status": "preparing"
+}
+```
+
+---
+
+### **GET** `/api/reviews`
+
+---
+
+### **GET** `/api/reviews/:mealId`
+
+---
+
+### **GET** `/api/earnings`
+
+---
+
+### **POST** `/api/support`
+
+---
+
+### **GET** `/api/support`
+
+---
+
+### **PUT** `/api/support/:id/reply`
+
+---
+
+### **PUT** `/api/support/:id/reply/:replyId`
+
+---
+
+### **DELETE** `/api/support/:id/reply/:replyId`
+
+---
+
+### **GET** `/api/nutrition-plans`
+
+---
+
+### **GET** `/api/nutrition-plans/:babyId`
+
+---
+
+### **GET** `/api/inventory`
+
+---
+
+### **POST** `/api/inventory`
+
+---
+
+### **PUT** `/api/inventory/:id`
+
+---
+
+### **DELETE** `/api/inventory/:id`
+
+---
+
+### **POST** `/api/hygiene`
+
+---
+
+### **GET** `/api/hygiene`
+
+---
+
+### **PUT** `/api/hygiene/:id`
+
+---
+
+### **DELETE** `/api/hygiene/:id`
+
+---
+
+### **POST** `/api/batches`
+
+---
+
+### **GET** `/api/batches`
+
+---
+
+### **PATCH** `/api/batches/:id/status`
+
+---
+
+### **GET** `/api/settings`

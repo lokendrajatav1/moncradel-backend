@@ -126,7 +126,12 @@ routes.forEach(({ method, path: pathName }) => {
       folder.item.push(createPostmanReq(pathName, method));
       
       // Add to MD
-      roleData.md.push(`- **${method.toUpperCase()}** \`${pathName}\``);
+      let mdBlock = `### **${method.toUpperCase()}** \`${pathName}\``;
+      const key = `${method.toUpperCase()} ${pathName}`;
+      if (payloadDictionary[key]) {
+        mdBlock += `\n**Example Request Body:**\n\`\`\`json\n${payloadDictionary[key]}\n\`\`\``;
+      }
+      roleData.md.push(mdBlock);
     }
   }
 });
@@ -140,7 +145,7 @@ for (const [roleKey, roleData] of Object.entries(roleMappings)) {
   
   // Markdown Guide
   const mdFile = path.join(artifactDir, `${roleKey}_integration_guide.md`);
-  const mdContent = `# ${roleData.name} Integration Guide\n\nThis guide contains all the APIs required to build the **${roleData.name}**. \n\n### How to test:\nImport the \`${roleKey}_complete_postman.json\` file from your backend folder into Postman.\n\n### API List:\n${roleData.md.join('\n')}\n`;
+  const mdContent = `# ${roleData.name} Integration Guide\n\nThis guide contains all the APIs required to build the **${roleData.name}**. \n\n### How to test:\nImport the \`${roleKey}_complete_postman.json\` file from your backend folder into Postman.\n\n### API Details:\n\n${roleData.md.join('\n\n---\n\n')}\n`;
   fs.writeFileSync(mdFile, mdContent);
   console.log(`Generated Artifact: ${mdFile}`);
 }

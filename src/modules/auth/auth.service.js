@@ -133,7 +133,10 @@ const sendOtp = async (phone, additionalData = {}) => {
   // In a real app, send this via SMS (Twilio/Firebase)
   console.log(`[SMS MOCK] OTP for ${phone} is: ${otp}`);
 
-  return { message: 'OTP sent successfully' };
+  return { 
+    message: 'OTP sent successfully',
+    otp: otp // Added for testing purposes so you don't have to check logs
+  };
 };
 
 /**
@@ -198,7 +201,11 @@ const forgotPassword = async (email) => {
   console.log(`Option 1 (App): Enter this OTP: ${otp}`);
   console.log(`Option 2 (Web): Click this link: ${resetUrl}\n`);
 
-  return { message: 'Email sent with OTP and Reset Link' };
+  return { 
+    message: 'Email sent with OTP and Reset Link',
+    otp: otp, // Added for testing
+    resetToken: resetToken // Added for testing
+  };
 };
 
 /**
