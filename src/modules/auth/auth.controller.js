@@ -47,7 +47,7 @@ const sendOtp = async (req, res) => {
   try {
     const { phone, ...additionalData } = req.body;
     const result = await authService.sendOtp(phone, additionalData);
-    res.status(200).json({ success: true, message: result.message });
+    res.status(200).json({ success: true, ...result });
   } catch (error) {
     if (error.message.includes('Please wait')) {
       return res.status(429).json({ success: false, message: error.message });
@@ -86,7 +86,7 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const result = await authService.forgotPassword(email);
-    res.status(200).json({ success: true, message: result.message });
+    res.status(200).json({ success: true, ...result });
   } catch (error) {
     if (error.message === 'User not found') {
       return res.status(404).json({ success: false, message: error.message });
