@@ -4,6 +4,7 @@ const Customer = require('../customer/customer.model');
 const Doctor = require('../doctor/doctor.model');
 const DeliveryPartner = require('../deliveryPartner/deliveryPartner.model');
 const KitchenPartner = require('../kitchenPartner/kitchenPartner.model');
+const { uploadToCloudinary } = require('../../utils/cloudinary');
 
 const getModelByRole = (role) => {
   switch (role) {
@@ -41,9 +42,22 @@ const getUserProfile = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     // Update base user fields
-    if (req.body.name) {
-      await User.findByIdAndUpdate(req.user._id, { name: req.body.name });
-      req.user.name = req.body.name;
+    const baseUpdates = {};
+    if (req.body.name) baseUpdates.name = req.body.name;
+    if (req.body.email) baseUpdates.email = req.body.email;
+    if (req.body.phone) baseUpdates.phone = req.body.phone;
+
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, 'avatars');
+      baseUpdates.avatar = result.secure_url;
+    }
+
+    if (Object.keys(baseUpdates).length > 0) {
+      await User.findByIdAndUpdate(req.user._id, baseUpdates, { runValidators: true });
+      if (baseUpdates.name) req.user.name = baseUpdates.name;
+      if (baseUpdates.email) req.user.email = baseUpdates.email;
+      if (baseUpdates.phone) req.user.phone = baseUpdates.phone;
+      if (baseUpdates.avatar) req.user.avatar = baseUpdates.avatar;
     }
 
     // Update specific profile fields
@@ -61,6 +75,8 @@ const updateUserProfile = async (req, res) => {
       delete updateData.role;
       delete updateData._id;
       delete updateData.name;
+      delete updateData.email;
+      delete updateData.phone;
 
       Object.assign(profileData, updateData);
       await profileData.save();
@@ -72,6 +88,13 @@ const updateUserProfile = async (req, res) => {
       profile: profileData
     });
   } catch (error) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(400).json({ 
+        success: false, 
+        message: `${field.charAt(0).toUpperCase() + field.substring(1)} already exists. Please use a different ${field}.` 
+      });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -176,7 +199,15 @@ const deleteUser = async (req, res) => {
 // @access  Public (temporarily for testing)
 const updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    
+    // Handle avatar upload if present
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, 'avatars');
+      updateData.avatar = result.secure_url;
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true
     }).select('-password');
@@ -185,6 +216,13 @@ const updateUser = async (req, res) => {
     }
     res.status(200).json({ success: true, data: user });
   } catch (error) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(400).json({ 
+        success: false, 
+        message: `${field.charAt(0).toUpperCase() + field.substring(1)} already exists. Please use a different ${field}.` 
+      });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };

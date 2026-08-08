@@ -10,12 +10,6 @@ const customerSchema = new mongoose.Schema(
     },
     address: {
       type: String
-    },
-    alternatePhone: {
-      type: String
-    },
-    emergencyContact: {
-      type: String
     }
   },
   {

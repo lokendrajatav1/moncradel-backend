@@ -17,7 +17,7 @@ const addGrowthRecord = async (userId, growthData) => {
   });
 
   // Optionally update the Baby's current weight based on the latest record
-  await Baby.findByIdAndUpdate(babyId, { weightInKg: weight });
+  await Baby.findByIdAndUpdate(babyId, { weight: weight });
 
   return record;
 };
@@ -46,7 +46,7 @@ const updateGrowthRecord = async (id, growthData) => {
 
   // Optionally update Baby's weight if this is the latest record, but for simplicity we skip here
   if (growthData.weight) {
-    await Baby.findByIdAndUpdate(record.babyId, { weightInKg: growthData.weight });
+    await Baby.findByIdAndUpdate(record.babyId, { weight: growthData.weight });
   }
 
   return record;

@@ -1,4 +1,5 @@
 const babyService = require('./baby.service');
+const { uploadToCloudinary } = require('../../utils/cloudinary');
 
 // @desc    Add a new baby
 // @route   POST /api/babies
@@ -80,7 +81,17 @@ const updateBaby = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Unauthorized to update this baby' });
     }
 
-    const updatedBaby = await babyService.updateBaby(req.params.id, req.body);
+    console.log("====== UPDATE BABY DEBUG ======");
+    console.log("req.body:", req.body);
+    console.log("req.file:", req.file ? "File is present: " + req.file.originalname : "No file found in request");
+    
+    const updateData = { ...req.body };
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, 'avatars');
+      updateData.avatar = result.secure_url;
+    }
+
+    const updatedBaby = await babyService.updateBaby(req.params.id, updateData);
     res.status(200).json({ success: true, data: updatedBaby });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

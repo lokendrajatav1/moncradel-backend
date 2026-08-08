@@ -1,4 +1,6 @@
 const User = require('../user/user.model');
+const OtpVerification = require('./otp.model');
+const sendEmail = require('../../utils/sendEmail');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -16,7 +18,7 @@ const generateToken = (id) => {
  * Register a new user
  */
 const createUser = async (userData) => {
-  const { name, email, password, role, phone } = userData;
+  const { name, email, password, role, phone, otp } = userData;
 
   // Check if user exists by email
   const userExists = await User.findOne({ email });
@@ -28,6 +30,21 @@ const createUser = async (userData) => {
   const phoneExists = await User.findOne({ phone });
   if (phoneExists) {
     throw new Error('User with this phone number already exists');
+  }
+
+  // Verify OTP
+  const otpRecord = await OtpVerification.findOne({ email });
+  if (!otpRecord) {
+    throw new Error('OTP not found or expired. Please request a new one.');
+  }
+
+  if (otpRecord.otp !== otp) {
+    throw new Error('Invalid OTP');
+  }
+
+  if (otpRecord.expiresAt < new Date()) {
+    await OtpVerification.deleteOne({ _id: otpRecord._id });
+    throw new Error('Invalid or expired OTP');
   }
 
   // Hash password
@@ -42,6 +59,9 @@ const createUser = async (userData) => {
     role,
     phone
   });
+
+  // Delete OTP record after successful registration
+  await OtpVerification.deleteOne({ email });
 
   return {
     _id: user.id,
@@ -254,15 +274,57 @@ const resetPassword = async ({ token, otp, email, password }) => {
 
   await user.save();
 
-  return { message: 'Password reset successful' };
+  return {
+    _id: user.id,
+    name: user.name,
+    email: user.email,
+    token: generateToken(user._id)
+  };
+};
+
+/**
+ * Send Register OTP via Email
+ */
+const sendRegisterOtp = async (email) => {
+  // Check if user already exists
+  const emailExists = await User.findOne({ email });
+  if (emailExists) {
+    throw new Error('User with this email already exists');
+  }
+
+  // Generate 4-digit OTP
+  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+  // Upsert OTP (replaces existing one if it exists, fulfilling the "resend" behavior)
+  await OtpVerification.findOneAndUpdate(
+    { email },
+    { otp, expiresAt },
+    { upsert: true, new: true }
+  );
+
+  // Send Email
+  try {
+    await sendEmail({
+      to: email,
+      subject: 'Moncradel - Email Verification OTP',
+      text: `Your One-Time Password (OTP) for Moncradel registration is: ${otp}. It is valid for 10 minutes.`,
+      html: `<h2>Moncradel Verification</h2><p>Your One-Time Password (OTP) for registration is: <strong>${otp}</strong></p><p>It is valid for 10 minutes.</p>`,
+    });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('Email could not be sent. Please try again.');
+  }
+
+  return { message: 'OTP sent successfully to email' };
 };
 
 module.exports = {
   createUser,
   authenticateUser,
-  generateToken,
   sendOtp,
   verifyOtp,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  sendRegisterOtp
 };

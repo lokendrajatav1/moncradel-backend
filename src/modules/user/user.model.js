@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Please add a phone number'],
       unique: true
     },
+    address: {
+      type: String
+    },
     isActive: {
       type: Boolean,
       default: true
@@ -55,7 +58,10 @@ const userSchema = new mongoose.Schema(
       select: false
     },
     resetPasswordToken: String,
-    resetPasswordExpire: Date
+    resetPasswordExpire: Date,
+    avatar: {
+      type: String
+    }
   },
   {
     timestamps: true

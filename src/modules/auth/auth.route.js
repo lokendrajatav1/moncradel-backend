@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, sendOtp, verifyOtp, forgotPassword, resetPassword } = require('./auth.controller');
+const { registerUser, loginUser, sendOtp, verifyOtp, forgotPassword, resetPassword, sendRegisterOtp } = require('./auth.controller');
 const validate = require('../../middleware/validate');
-const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema, forgotPasswordSchema, resetPasswordSchema } = require('./auth.validation');
+const { registerSchema, loginSchema, sendOtpSchema, verifyOtpSchema, forgotPasswordSchema, resetPasswordSchema, sendRegisterOtpSchema } = require('./auth.validation');
 
 router.post('/register', validate(registerSchema), registerUser);
+router.post('/send-register-otp', validate(sendRegisterOtpSchema), sendRegisterOtp);
 router.post('/login', validate(loginSchema), loginUser);
 router.post('/send-otp', validate(sendOtpSchema), sendOtp);
 router.post('/verify-otp', validate(verifyOtpSchema), verifyOtp);

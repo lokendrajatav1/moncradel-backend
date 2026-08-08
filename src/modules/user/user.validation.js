@@ -15,7 +15,10 @@ const loginSchema = z.object({
 
 const updateProfileSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters long' }).optional(),
-}).passthrough(); // passthrough allows role-specific fields like specialization, address, etc. to pass through
+  email: z.string().email({ message: 'Invalid email address' }).optional(),
+  phone: z.string().regex(/^\d{10}$/, "Must be a 10-digit number").optional(),
+  address: z.string().optional()
+}).passthrough(); // passthrough allows role-specific fields like specialization, clinicName, etc. to pass through
 
 module.exports = {
   registerSchema,

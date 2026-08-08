@@ -12,6 +12,25 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     // Basic error handling mapping
+    if (error.message.includes('already exists') || error.message.includes('Invalid or expired OTP')) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Send OTP to email for registration
+// @route   POST /api/auth/send-register-otp
+// @access  Public
+const sendRegisterOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await authService.sendRegisterOtp(email);
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    if (error.message.includes('Please wait')) {
+      return res.status(429).json({ success: false, message: error.message });
+    }
     if (error.message.includes('already exists')) {
       return res.status(400).json({ success: false, message: error.message });
     }
@@ -116,5 +135,6 @@ module.exports = {
   sendOtp,
   verifyOtp,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  sendRegisterOtp
 };

@@ -6,11 +6,16 @@ const registerSchema = z.object({
   password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
   role: z.enum(['admin', 'delivery', 'doctor', 'kitchen', 'parent']).optional(),
   phone: z.string().regex(/^\d{10}$/, "Must be a 10-digit number"),
+  otp: z.string().length(4, { message: 'OTP must be exactly 4 digits' }),
 });
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
   password: z.string().min(1, { message: 'Password is required' }),
+});
+
+const sendRegisterOtpSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
 });
 
 const sendOtpSchema = z.object({
@@ -49,5 +54,6 @@ module.exports = {
   sendOtpSchema,
   verifyOtpSchema,
   forgotPasswordSchema,
-  resetPasswordSchema
+  resetPasswordSchema,
+  sendRegisterOtpSchema
 };
