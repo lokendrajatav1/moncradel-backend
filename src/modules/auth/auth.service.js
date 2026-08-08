@@ -87,15 +87,12 @@ const sendOtp = async (phone, additionalData = {}) => {
   let user = await User.findOne({ phone });
 
   if (!user) {
-    // New user signup via OTP requires name and email initially to not break DB schema
-    if (!additionalData.name || !additionalData.email) {
-      throw new Error('New registration requires name and email along with phone number');
-    }
-
-    // Check if email already exists to prevent duplicate key error
-    const emailExists = await User.findOne({ email: additionalData.email });
-    if (emailExists) {
-      throw new Error('User with this email already exists');
+    // Check if email already exists to prevent duplicate key error (only if email is provided)
+    if (additionalData.email) {
+      const emailExists = await User.findOne({ email: additionalData.email });
+      if (emailExists) {
+        throw new Error('User with this email already exists');
+      }
     }
 
     user = await User.create({

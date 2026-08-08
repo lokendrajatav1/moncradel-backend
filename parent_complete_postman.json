@@ -642,7 +642,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"subject\": \"Payment issue\",\n  \"message\": \"My earnings for last week are not settled.\",\n  \"priority\": \"high\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -694,7 +694,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"message\": \"Thank you, waiting for the resolution.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -846,7 +846,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"date\": \"2024-12-02\",\n  \"timeSlot\": \"11:30\",\n  \"type\": \"clinic\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -878,7 +878,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"babyId\": \"64f719d3f1a2b3c4d5e6f7a8\",\n  \"weight\": 5.2,\n  \"height\": 60,\n  \"headCircumference\": 40,\n  \"recordedAt\": \"2024-11-01\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -935,7 +935,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"weight\": 5.5,\n  \"height\": 62,\n  \"headCircumference\": 41\n}",
               "options": {
                 "raw": {
                   "language": "json"

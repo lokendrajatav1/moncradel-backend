@@ -143,6 +143,14 @@ Import the `kitchen_complete_postman.json` file from your backend folder into Po
 ---
 
 ### **POST** `/api/support`
+**Example Request Body:**
+```json
+{
+  "subject": "Payment issue",
+  "message": "My earnings for last week are not settled.",
+  "priority": "high"
+}
+```
 
 ---
 
@@ -151,6 +159,12 @@ Import the `kitchen_complete_postman.json` file from your backend folder into Po
 ---
 
 ### **PUT** `/api/support/:id/reply`
+**Example Request Body:**
+```json
+{
+  "message": "Thank you, waiting for the resolution."
+}
+```
 
 ---
 

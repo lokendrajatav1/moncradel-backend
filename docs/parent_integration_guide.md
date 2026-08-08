@@ -180,6 +180,14 @@ Import the `parent_complete_postman.json` file from your backend folder into Pos
 ---
 
 ### **POST** `/api/support`
+**Example Request Body:**
+```json
+{
+  "subject": "Payment issue",
+  "message": "My earnings for last week are not settled.",
+  "priority": "high"
+}
+```
 
 ---
 
@@ -188,6 +196,12 @@ Import the `parent_complete_postman.json` file from your backend folder into Pos
 ---
 
 ### **PUT** `/api/support/:id/reply`
+**Example Request Body:**
+```json
+{
+  "message": "Thank you, waiting for the resolution."
+}
+```
 
 ---
 
@@ -218,10 +232,28 @@ Import the `parent_complete_postman.json` file from your backend folder into Pos
 ---
 
 ### **PUT** `/api/appointments/:id`
+**Example Request Body:**
+```json
+{
+  "date": "2024-12-02",
+  "timeSlot": "11:30",
+  "type": "clinic"
+}
+```
 
 ---
 
 ### **POST** `/api/growth`
+**Example Request Body:**
+```json
+{
+  "babyId": "64f719d3f1a2b3c4d5e6f7a8",
+  "weight": 5.2,
+  "height": 60,
+  "headCircumference": 40,
+  "recordedAt": "2024-11-01"
+}
+```
 
 ---
 
@@ -230,6 +262,14 @@ Import the `parent_complete_postman.json` file from your backend folder into Pos
 ---
 
 ### **PUT** `/api/growth/:id`
+**Example Request Body:**
+```json
+{
+  "weight": 5.5,
+  "height": 62,
+  "headCircumference": 41
+}
+```
 
 ---
 

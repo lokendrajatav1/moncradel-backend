@@ -57,7 +57,14 @@ const payloadDictionary = {
   "PATCH /api/orders/:id/status": '{\n  "status": "preparing"\n}',
   "POST /api/addresses": '{\n  "title": "Home",\n  "street": "123 Main St",\n  "city": "Mumbai",\n  "state": "MH",\n  "pincode": "400001",\n  "phone": "9876543210"\n}',
   "POST /api/cart": '{\n  "productId": "64f719d3f1a2b3c4d5e6f7a8",\n  "quantity": 1\n}',
-  "POST /api/reviews": '{\n  "mealId": "64f719d3f1a2b3c4d5e6f7a8",\n  "orderId": "64f719d3f1a2b3c4d5e6f7a8",\n  "rating": 5,\n  "comment": "Great food!"\n}'
+  "POST /api/reviews": '{\n  "mealId": "64f719d3f1a2b3c4d5e6f7a8",\n  "orderId": "64f719d3f1a2b3c4d5e6f7a8",\n  "rating": 5,\n  "comment": "Great food!"\n}',
+  "PUT /api/appointments/:id": '{\n  "date": "2024-12-02",\n  "timeSlot": "11:30",\n  "type": "clinic"\n}',
+  "POST /api/growth": '{\n  "babyId": "64f719d3f1a2b3c4d5e6f7a8",\n  "weight": 5.2,\n  "height": 60,\n  "headCircumference": 40,\n  "recordedAt": "2024-11-01"\n}',
+  "PUT /api/growth/:id": '{\n  "weight": 5.5,\n  "height": 62,\n  "headCircumference": 41\n}',
+  "PUT /api/prescriptions/:id": '{\n  "advice": "Keep the baby hydrated",\n  "nextVisitDate": "2024-03-01"\n}',
+  "PUT /api/nutrition-plans/:id": '{\n  "guidelines": "Increase water intake and add fruit purees"\n}',
+  "POST /api/support": '{\n  "subject": "Payment issue",\n  "message": "My earnings for last week are not settled.",\n  "priority": "high"\n}',
+  "PUT /api/support/:id/reply": '{\n  "message": "Thank you, waiting for the resolution."\n}'
 };
 
 const createPostmanReq = (pathName, method) => {

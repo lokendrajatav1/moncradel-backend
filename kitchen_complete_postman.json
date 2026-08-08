@@ -531,7 +531,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"subject\": \"Payment issue\",\n  \"message\": \"My earnings for last week are not settled.\",\n  \"priority\": \"high\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -583,7 +583,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \n}",
+              "raw": "{\n  \"message\": \"Thank you, waiting for the resolution.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
