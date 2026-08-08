@@ -1,0 +1,566 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/auth/register"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/login"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/send-otp"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/verify-otp"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/forgot-password"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/reset-password"
+  },
+  {
+    "method": "GET",
+    "path": "/api/users/profile"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/users/profile"
+  },
+  {
+    "method": "POST",
+    "path": "/api/users/register"
+  },
+  {
+    "method": "GET",
+    "path": "/api/users"
+  },
+  {
+    "method": "GET",
+    "path": "/api/users/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/users/:id/verify"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/users/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/users/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/customers"
+  },
+  {
+    "method": "GET",
+    "path": "/api/customers/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/customers/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/customers/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/doctors"
+  },
+  {
+    "method": "GET",
+    "path": "/api/doctors/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/doctors/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/doctors/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/delivery-partners"
+  },
+  {
+    "method": "GET",
+    "path": "/api/delivery-partners/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/delivery-partners/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/delivery-partners/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/kitchen-partners"
+  },
+  {
+    "method": "GET",
+    "path": "/api/kitchen-partners/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/kitchen-partners/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/kitchen-partners/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/babies"
+  },
+  {
+    "method": "GET",
+    "path": "/api/babies"
+  },
+  {
+    "method": "GET",
+    "path": "/api/babies/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/babies/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/meals"
+  },
+  {
+    "method": "GET",
+    "path": "/api/meals"
+  },
+  {
+    "method": "GET",
+    "path": "/api/meals/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/meals/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/meals/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/orders"
+  },
+  {
+    "method": "GET",
+    "path": "/api/orders"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/orders/:id/status"
+  },
+  {
+    "method": "POST",
+    "path": "/api/reviews"
+  },
+  {
+    "method": "GET",
+    "path": "/api/reviews"
+  },
+  {
+    "method": "GET",
+    "path": "/api/reviews/:mealId"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/reviews/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/reviews/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/notifications/broadcast"
+  },
+  {
+    "method": "GET",
+    "path": "/api/notifications/broadcast"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/notifications/broadcast/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/notifications"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/notifications/:id/read"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/notifications/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/earnings"
+  },
+  {
+    "method": "POST",
+    "path": "/api/earnings"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/earnings/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/earnings/:id"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/earnings/:id/pay"
+  },
+  {
+    "method": "POST",
+    "path": "/api/support"
+  },
+  {
+    "method": "GET",
+    "path": "/api/support"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/support/:id/reply"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/support/:id/reply/:replyId"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/support/:id/reply/:replyId"
+  },
+  {
+    "method": "POST",
+    "path": "/api/appointments"
+  },
+  {
+    "method": "GET",
+    "path": "/api/appointments"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/appointments/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/appointments/:id"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/appointments/:id/status"
+  },
+  {
+    "method": "POST",
+    "path": "/api/growth"
+  },
+  {
+    "method": "GET",
+    "path": "/api/growth/:babyId"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/growth/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/growth/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/prescriptions"
+  },
+  {
+    "method": "GET",
+    "path": "/api/prescriptions"
+  },
+  {
+    "method": "GET",
+    "path": "/api/prescriptions/:babyId"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/prescriptions/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/prescriptions/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/payments"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/payments/:id/verify"
+  },
+  {
+    "method": "POST",
+    "path": "/api/subscriptions"
+  },
+  {
+    "method": "GET",
+    "path": "/api/subscriptions"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/subscriptions/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/subscriptions/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/subscription-plans"
+  },
+  {
+    "method": "POST",
+    "path": "/api/subscription-plans"
+  },
+  {
+    "method": "GET",
+    "path": "/api/subscription-plans/:id"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/subscription-plans/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/subscription-plans/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/products"
+  },
+  {
+    "method": "GET",
+    "path": "/api/products"
+  },
+  {
+    "method": "GET",
+    "path": "/api/products/:id"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/products/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/products/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/nutrition-plans"
+  },
+  {
+    "method": "GET",
+    "path": "/api/nutrition-plans"
+  },
+  {
+    "method": "GET",
+    "path": "/api/nutrition-plans/:babyId"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/nutrition-plans/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/nutrition-plans/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/inventory"
+  },
+  {
+    "method": "POST",
+    "path": "/api/inventory"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/inventory/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/inventory/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/hygiene"
+  },
+  {
+    "method": "GET",
+    "path": "/api/hygiene"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/hygiene/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/hygiene/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches"
+  },
+  {
+    "method": "GET",
+    "path": "/api/batches"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/batches/:id/status"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/batches/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/analytics/dashboard"
+  },
+  {
+    "method": "POST",
+    "path": "/api/banners"
+  },
+  {
+    "method": "GET",
+    "path": "/api/banners"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/banners/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/banners/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/coupons"
+  },
+  {
+    "method": "GET",
+    "path": "/api/coupons"
+  },
+  {
+    "method": "POST",
+    "path": "/api/coupons/apply"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/coupons/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/coupons/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/settings"
+  },
+  {
+    "method": "POST",
+    "path": "/api/settings"
+  },
+  {
+    "method": "GET",
+    "path": "/api/audit-logs"
+  },
+  {
+    "method": "GET",
+    "path": "/api/cart"
+  },
+  {
+    "method": "POST",
+    "path": "/api/cart"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/cart"
+  },
+  {
+    "method": "POST",
+    "path": "/api/addresses"
+  },
+  {
+    "method": "GET",
+    "path": "/api/addresses"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/addresses/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/addresses/:id"
+  },
+  {
+    "method": "POST",
+    "path": "/api/milestones"
+  },
+  {
+    "method": "GET",
+    "path": "/api/milestones/:babyId"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/milestones/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/milestones/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/standard-milestones"
+  },
+  {
+    "method": "POST",
+    "path": "/api/standard-milestones"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/standard-milestones/:id"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/standard-milestones/:id"
+  },
+  {
+    "method": "GET",
+    "path": "/api/wallet"
+  },
+  {
+    "method": "POST",
+    "path": "/api/wallet/transaction"
+  },
+  {
+    "method": "GET",
+    "path": ""
+  }
+]

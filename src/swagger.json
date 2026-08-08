@@ -1,0 +1,3144 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Moncradel Complete API",
+    "description": "Auto-generated comprehensive Swagger API documentation",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "POST /auth/register",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "POST /auth/login",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/send-otp": {
+      "post": {
+        "summary": "POST /auth/send-otp",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/verify-otp": {
+      "post": {
+        "summary": "POST /auth/verify-otp",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "POST /auth/forgot-password",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "POST /auth/reset-password",
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "summary": "GET /users/profile",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "summary": "PUT /users/profile",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "POST /users/register",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "GET /users",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "GET /users/{id}",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /users/{id}",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /users/{id}",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/users/{id}/verify": {
+      "put": {
+        "summary": "PUT /users/{id}/verify",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers": {
+      "get": {
+        "summary": "GET /customers",
+        "tags": [
+          "customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/customers/{id}": {
+      "get": {
+        "summary": "GET /customers/{id}",
+        "tags": [
+          "customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /customers/{id}",
+        "tags": [
+          "customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /customers/{id}",
+        "tags": [
+          "customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/doctors": {
+      "get": {
+        "summary": "GET /doctors",
+        "tags": [
+          "doctors"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/doctors/{id}": {
+      "get": {
+        "summary": "GET /doctors/{id}",
+        "tags": [
+          "doctors"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /doctors/{id}",
+        "tags": [
+          "doctors"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /doctors/{id}",
+        "tags": [
+          "doctors"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/delivery-partners": {
+      "get": {
+        "summary": "GET /delivery-partners",
+        "tags": [
+          "delivery-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/delivery-partners/{id}": {
+      "get": {
+        "summary": "GET /delivery-partners/{id}",
+        "tags": [
+          "delivery-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /delivery-partners/{id}",
+        "tags": [
+          "delivery-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /delivery-partners/{id}",
+        "tags": [
+          "delivery-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/kitchen-partners": {
+      "get": {
+        "summary": "GET /kitchen-partners",
+        "tags": [
+          "kitchen-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/kitchen-partners/{id}": {
+      "get": {
+        "summary": "GET /kitchen-partners/{id}",
+        "tags": [
+          "kitchen-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /kitchen-partners/{id}",
+        "tags": [
+          "kitchen-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /kitchen-partners/{id}",
+        "tags": [
+          "kitchen-partners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/babies": {
+      "post": {
+        "summary": "POST /babies",
+        "tags": [
+          "babies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /babies",
+        "tags": [
+          "babies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/babies/{id}": {
+      "get": {
+        "summary": "GET /babies/{id}",
+        "tags": [
+          "babies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /babies/{id}",
+        "tags": [
+          "babies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/meals": {
+      "post": {
+        "summary": "POST /meals",
+        "tags": [
+          "meals"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /meals",
+        "tags": [
+          "meals"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/meals/{id}": {
+      "get": {
+        "summary": "GET /meals/{id}",
+        "tags": [
+          "meals"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /meals/{id}",
+        "tags": [
+          "meals"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /meals/{id}",
+        "tags": [
+          "meals"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/orders": {
+      "post": {
+        "summary": "POST /orders",
+        "tags": [
+          "orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /orders",
+        "tags": [
+          "orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/orders/{id}/status": {
+      "patch": {
+        "summary": "PATCH /orders/{id}/status",
+        "tags": [
+          "orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reviews": {
+      "post": {
+        "summary": "POST /reviews",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /reviews",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/reviews/{mealId}": {
+      "get": {
+        "summary": "GET /reviews/{mealId}",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "mealId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/reviews/{id}": {
+      "put": {
+        "summary": "PUT /reviews/{id}",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /reviews/{id}",
+        "tags": [
+          "reviews"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/notifications/broadcast": {
+      "post": {
+        "summary": "POST /notifications/broadcast",
+        "tags": [
+          "notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /notifications/broadcast",
+        "tags": [
+          "notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/notifications/broadcast/{id}": {
+      "delete": {
+        "summary": "DELETE /notifications/broadcast/{id}",
+        "tags": [
+          "notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "summary": "GET /notifications",
+        "tags": [
+          "notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "summary": "PATCH /notifications/{id}/read",
+        "tags": [
+          "notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/{id}": {
+      "delete": {
+        "summary": "DELETE /notifications/{id}",
+        "tags": [
+          "notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/earnings": {
+      "get": {
+        "summary": "GET /earnings",
+        "tags": [
+          "earnings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /earnings",
+        "tags": [
+          "earnings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/earnings/{id}": {
+      "put": {
+        "summary": "PUT /earnings/{id}",
+        "tags": [
+          "earnings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /earnings/{id}",
+        "tags": [
+          "earnings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/earnings/{id}/pay": {
+      "patch": {
+        "summary": "PATCH /earnings/{id}/pay",
+        "tags": [
+          "earnings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/support": {
+      "post": {
+        "summary": "POST /support",
+        "tags": [
+          "support"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /support",
+        "tags": [
+          "support"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/support/{id}/reply": {
+      "put": {
+        "summary": "PUT /support/{id}/reply",
+        "tags": [
+          "support"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/support/{id}/reply/{replyId}": {
+      "put": {
+        "summary": "PUT /support/{id}/reply/{replyId}",
+        "tags": [
+          "support"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "replyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /support/{id}/reply/{replyId}",
+        "tags": [
+          "support"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "replyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/appointments": {
+      "post": {
+        "summary": "POST /appointments",
+        "tags": [
+          "appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /appointments",
+        "tags": [
+          "appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/appointments/{id}": {
+      "put": {
+        "summary": "PUT /appointments/{id}",
+        "tags": [
+          "appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /appointments/{id}",
+        "tags": [
+          "appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/appointments/{id}/status": {
+      "patch": {
+        "summary": "PATCH /appointments/{id}/status",
+        "tags": [
+          "appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/growth": {
+      "post": {
+        "summary": "POST /growth",
+        "tags": [
+          "growth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/growth/{babyId}": {
+      "get": {
+        "summary": "GET /growth/{babyId}",
+        "tags": [
+          "growth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "babyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/growth/{id}": {
+      "put": {
+        "summary": "PUT /growth/{id}",
+        "tags": [
+          "growth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /growth/{id}",
+        "tags": [
+          "growth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/prescriptions": {
+      "post": {
+        "summary": "POST /prescriptions",
+        "tags": [
+          "prescriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /prescriptions",
+        "tags": [
+          "prescriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/prescriptions/{babyId}": {
+      "get": {
+        "summary": "GET /prescriptions/{babyId}",
+        "tags": [
+          "prescriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "babyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/prescriptions/{id}": {
+      "put": {
+        "summary": "PUT /prescriptions/{id}",
+        "tags": [
+          "prescriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /prescriptions/{id}",
+        "tags": [
+          "prescriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/payments": {
+      "post": {
+        "summary": "POST /payments",
+        "tags": [
+          "payments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{id}/verify": {
+      "patch": {
+        "summary": "PATCH /payments/{id}/verify",
+        "tags": [
+          "payments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscriptions": {
+      "post": {
+        "summary": "POST /subscriptions",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /subscriptions",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/subscriptions/{id}": {
+      "patch": {
+        "summary": "PATCH /subscriptions/{id}",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /subscriptions/{id}",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/subscription-plans": {
+      "get": {
+        "summary": "GET /subscription-plans",
+        "tags": [
+          "subscription-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /subscription-plans",
+        "tags": [
+          "subscription-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscription-plans/{id}": {
+      "get": {
+        "summary": "GET /subscription-plans/{id}",
+        "tags": [
+          "subscription-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "summary": "PATCH /subscription-plans/{id}",
+        "tags": [
+          "subscription-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /subscription-plans/{id}",
+        "tags": [
+          "subscription-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/products": {
+      "post": {
+        "summary": "POST /products",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /products",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "GET /products/{id}",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT /products/{id}",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /products/{id}",
+        "tags": [
+          "products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/nutrition-plans": {
+      "post": {
+        "summary": "POST /nutrition-plans",
+        "tags": [
+          "nutrition-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /nutrition-plans",
+        "tags": [
+          "nutrition-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/nutrition-plans/{babyId}": {
+      "get": {
+        "summary": "GET /nutrition-plans/{babyId}",
+        "tags": [
+          "nutrition-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "babyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/nutrition-plans/{id}": {
+      "put": {
+        "summary": "PUT /nutrition-plans/{id}",
+        "tags": [
+          "nutrition-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /nutrition-plans/{id}",
+        "tags": [
+          "nutrition-plans"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/inventory": {
+      "get": {
+        "summary": "GET /inventory",
+        "tags": [
+          "inventory"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /inventory",
+        "tags": [
+          "inventory"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventory/{id}": {
+      "put": {
+        "summary": "PUT /inventory/{id}",
+        "tags": [
+          "inventory"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /inventory/{id}",
+        "tags": [
+          "inventory"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/hygiene": {
+      "post": {
+        "summary": "POST /hygiene",
+        "tags": [
+          "hygiene"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /hygiene",
+        "tags": [
+          "hygiene"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/hygiene/{id}": {
+      "put": {
+        "summary": "PUT /hygiene/{id}",
+        "tags": [
+          "hygiene"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /hygiene/{id}",
+        "tags": [
+          "hygiene"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/batches": {
+      "post": {
+        "summary": "POST /batches",
+        "tags": [
+          "batches"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /batches",
+        "tags": [
+          "batches"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/batches/{id}/status": {
+      "patch": {
+        "summary": "PATCH /batches/{id}/status",
+        "tags": [
+          "batches"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/batches/{id}": {
+      "delete": {
+        "summary": "DELETE /batches/{id}",
+        "tags": [
+          "batches"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/analytics/dashboard": {
+      "get": {
+        "summary": "GET /analytics/dashboard",
+        "tags": [
+          "analytics"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/banners": {
+      "post": {
+        "summary": "POST /banners",
+        "tags": [
+          "banners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /banners",
+        "tags": [
+          "banners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/banners/{id}": {
+      "put": {
+        "summary": "PUT /banners/{id}",
+        "tags": [
+          "banners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /banners/{id}",
+        "tags": [
+          "banners"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/coupons": {
+      "post": {
+        "summary": "POST /coupons",
+        "tags": [
+          "coupons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /coupons",
+        "tags": [
+          "coupons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/coupons/apply": {
+      "post": {
+        "summary": "POST /coupons/apply",
+        "tags": [
+          "coupons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coupons/{id}": {
+      "put": {
+        "summary": "PUT /coupons/{id}",
+        "tags": [
+          "coupons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /coupons/{id}",
+        "tags": [
+          "coupons"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/settings": {
+      "get": {
+        "summary": "GET /settings",
+        "tags": [
+          "settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /settings",
+        "tags": [
+          "settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/audit-logs": {
+      "get": {
+        "summary": "GET /audit-logs",
+        "tags": [
+          "audit-logs"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/cart": {
+      "get": {
+        "summary": "GET /cart",
+        "tags": [
+          "cart"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /cart",
+        "tags": [
+          "cart"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /cart",
+        "tags": [
+          "cart"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/addresses": {
+      "post": {
+        "summary": "POST /addresses",
+        "tags": [
+          "addresses"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GET /addresses",
+        "tags": [
+          "addresses"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/addresses/{id}": {
+      "put": {
+        "summary": "PUT /addresses/{id}",
+        "tags": [
+          "addresses"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /addresses/{id}",
+        "tags": [
+          "addresses"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/milestones": {
+      "post": {
+        "summary": "POST /milestones",
+        "tags": [
+          "milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/milestones/{babyId}": {
+      "get": {
+        "summary": "GET /milestones/{babyId}",
+        "tags": [
+          "milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "babyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/milestones/{id}": {
+      "put": {
+        "summary": "PUT /milestones/{id}",
+        "tags": [
+          "milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /milestones/{id}",
+        "tags": [
+          "milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/standard-milestones": {
+      "get": {
+        "summary": "GET /standard-milestones",
+        "tags": [
+          "standard-milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /standard-milestones",
+        "tags": [
+          "standard-milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/standard-milestones/{id}": {
+      "put": {
+        "summary": "PUT /standard-milestones/{id}",
+        "tags": [
+          "standard-milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /standard-milestones/{id}",
+        "tags": [
+          "standard-milestones"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/wallet": {
+      "get": {
+        "summary": "GET /wallet",
+        "tags": [
+          "wallet"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/wallet/transaction": {
+      "post": {
+        "summary": "POST /wallet/transaction",
+        "tags": [
+          "wallet"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
