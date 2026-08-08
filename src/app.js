@@ -14,7 +14,10 @@ const app = express();
 
 // Middleware
 if (process.env.NODE_ENV === 'production') {
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
+  }));
 }
 app.use(cors());
 if (process.env.NODE_ENV === 'development') {
