@@ -241,7 +241,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Name\",\n  \"address\": \"123 Main St\",\n  \"specialization\": \"Pediatrician\",\n  \"vehicleNumber\": \"MH01AB1234\",\n  \"kitchenName\": \"Healthy Bites\"\n}",
+              "raw": "{\n  \"name\": \"Healthy Bites Owner\",\n  \"kitchenName\": \"Healthy Bites Kitchen\",\n  \"fssaiNumber\": \"FSSAI-987654321\",\n  \"address\": \"Andheri West, Mumbai\",\n  \"operatingHours\": {\n    \"open\": \"07:00\",\n    \"close\": \"22:00\"\n  },\n  \"bankDetails\": {\n    \"accountName\": \"Healthy Bites\",\n    \"accountNumber\": \"123456789012\",\n    \"ifscCode\": \"HDFC0001234\",\n    \"bankName\": \"HDFC Bank\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"

@@ -86,11 +86,17 @@ Import the `delivery_complete_postman.json` file from your backend folder into P
 **Example Request Body:**
 ```json
 {
-  "name": "Updated Name",
-  "address": "123 Main St",
-  "specialization": "Pediatrician",
-  "vehicleNumber": "MH01AB1234",
-  "kitchenName": "Healthy Bites"
+  "name": "Raju Delivery",
+  "vehicleNumber": "MH-01-AB-1234",
+  "drivingLicense": "DL-1234567890",
+  "vehicleType": "Bike",
+  "address": "Borivali, Mumbai",
+  "bankDetails": {
+    "accountName": "Raju",
+    "accountNumber": "123456789012",
+    "ifscCode": "ICIC0001234",
+    "bankName": "ICICI Bank"
+  }
 }
 ```
 

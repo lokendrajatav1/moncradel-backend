@@ -86,11 +86,10 @@ Import the `parent_complete_postman.json` file from your backend folder into Pos
 **Example Request Body:**
 ```json
 {
-  "name": "Updated Name",
-  "address": "123 Main St",
-  "specialization": "Pediatrician",
-  "vehicleNumber": "MH01AB1234",
-  "kitchenName": "Healthy Bites"
+  "name": "Rahul Sharma",
+  "husbandName": "Suresh Sharma",
+  "pregnancyMonth": 5,
+  "address": "123 Main St, Mumbai"
 }
 ```
 

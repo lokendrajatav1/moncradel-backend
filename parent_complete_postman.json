@@ -241,7 +241,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Name\",\n  \"address\": \"123 Main St\",\n  \"specialization\": \"Pediatrician\",\n  \"vehicleNumber\": \"MH01AB1234\",\n  \"kitchenName\": \"Healthy Bites\"\n}",
+              "raw": "{\n  \"name\": \"Rahul Sharma\",\n  \"husbandName\": \"Suresh Sharma\",\n  \"pregnancyMonth\": 5,\n  \"address\": \"123 Main St, Mumbai\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

@@ -241,7 +241,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Name\",\n  \"address\": \"123 Main St\",\n  \"specialization\": \"Pediatrician\",\n  \"vehicleNumber\": \"MH01AB1234\",\n  \"kitchenName\": \"Healthy Bites\"\n}",
+              "raw": "{\n  \"name\": \"Dr. Ramesh Gupta\",\n  \"specialization\": \"Pediatrician\",\n  \"experienceYears\": 10,\n  \"clinicName\": \"Gupta Child Care\",\n  \"clinicAddress\": \"123 Health Street, Delhi\",\n  \"registrationNumber\": \"MCI-123456\",\n  \"degrees\": [\"MBBS\", \"MD Pediatrics\"],\n  \"qualifications\": [\"Child Nutrition Specialist\"],\n  \"languagesSpoken\": [\"Hindi\", \"English\"],\n  \"consultationFee\": 500,\n  \"isAvailable\": true,\n  \"timings\": {\n    \"start\": \"09:00\",\n    \"end\": \"17:00\"\n  },\n  \"bankDetails\": {\n    \"accountName\": \"Ramesh Gupta\",\n    \"accountNumber\": \"123456789012\",\n    \"ifscCode\": \"SBIN0001234\",\n    \"bankName\": \"State Bank of India\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"

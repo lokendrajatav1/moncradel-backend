@@ -241,7 +241,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Name\",\n  \"address\": \"123 Main St\",\n  \"specialization\": \"Pediatrician\",\n  \"vehicleNumber\": \"MH01AB1234\",\n  \"kitchenName\": \"Healthy Bites\"\n}",
+              "raw": "{\n  \"name\": \"Raju Delivery\",\n  \"vehicleNumber\": \"MH-01-AB-1234\",\n  \"drivingLicense\": \"DL-1234567890\",\n  \"vehicleType\": \"Bike\",\n  \"address\": \"Borivali, Mumbai\",\n  \"bankDetails\": {\n    \"accountName\": \"Raju\",\n    \"accountNumber\": \"123456789012\",\n    \"ifscCode\": \"ICIC0001234\",\n    \"bankName\": \"ICICI Bank\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"

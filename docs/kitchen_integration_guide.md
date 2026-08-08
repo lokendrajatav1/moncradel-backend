@@ -86,11 +86,20 @@ Import the `kitchen_complete_postman.json` file from your backend folder into Po
 **Example Request Body:**
 ```json
 {
-  "name": "Updated Name",
-  "address": "123 Main St",
-  "specialization": "Pediatrician",
-  "vehicleNumber": "MH01AB1234",
-  "kitchenName": "Healthy Bites"
+  "name": "Healthy Bites Owner",
+  "kitchenName": "Healthy Bites Kitchen",
+  "fssaiNumber": "FSSAI-987654321",
+  "address": "Andheri West, Mumbai",
+  "operatingHours": {
+    "open": "07:00",
+    "close": "22:00"
+  },
+  "bankDetails": {
+    "accountName": "Healthy Bites",
+    "accountNumber": "123456789012",
+    "ifscCode": "HDFC0001234",
+    "bankName": "HDFC Bank"
+  }
 }
 ```
 

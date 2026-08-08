@@ -48,7 +48,10 @@ const payloadDictionary = {
   "POST /api/auth/verify-otp": '{\n  "phone": "9876543210",\n  "otp": "1234"\n}',
   "POST /api/auth/forgot-password": '{\n  "email": "john@example.com"\n}',
   "POST /api/auth/reset-password": '{\n  "token": "token-from-email-link-here",\n  "otp": "1234",\n  "email": "john@example.com",\n  "password": "newpassword123",\n  "confirmPassword": "newpassword123"\n}',
-  "PUT /api/users/profile": '{\n  "name": "Updated Name",\n  "address": "123 Main St",\n  "specialization": "Pediatrician",\n  "vehicleNumber": "MH01AB1234",\n  "kitchenName": "Healthy Bites"\n}',
+  "PUT /api/users/profile|doctor": '{\n  "name": "Dr. Ramesh Gupta",\n  "specialization": "Pediatrician",\n  "experienceYears": 10,\n  "clinicName": "Gupta Child Care",\n  "clinicAddress": "123 Health Street, Delhi",\n  "registrationNumber": "MCI-123456",\n  "degrees": ["MBBS", "MD Pediatrics"],\n  "qualifications": ["Child Nutrition Specialist"],\n  "languagesSpoken": ["Hindi", "English"],\n  "consultationFee": 500,\n  "isAvailable": true,\n  "timings": {\n    "start": "09:00",\n    "end": "17:00"\n  },\n  "bankDetails": {\n    "accountName": "Ramesh Gupta",\n    "accountNumber": "123456789012",\n    "ifscCode": "SBIN0001234",\n    "bankName": "State Bank of India"\n  }\n}',
+  "PUT /api/users/profile|parent": '{\n  "name": "Rahul Sharma",\n  "husbandName": "Suresh Sharma",\n  "pregnancyMonth": 5,\n  "address": "123 Main St, Mumbai"\n}',
+  "PUT /api/users/profile|kitchen": '{\n  "name": "Healthy Bites Owner",\n  "kitchenName": "Healthy Bites Kitchen",\n  "fssaiNumber": "FSSAI-987654321",\n  "address": "Andheri West, Mumbai",\n  "operatingHours": {\n    "open": "07:00",\n    "close": "22:00"\n  },\n  "bankDetails": {\n    "accountName": "Healthy Bites",\n    "accountNumber": "123456789012",\n    "ifscCode": "HDFC0001234",\n    "bankName": "HDFC Bank"\n  }\n}',
+  "PUT /api/users/profile|delivery": '{\n  "name": "Raju Delivery",\n  "vehicleNumber": "MH-01-AB-1234",\n  "drivingLicense": "DL-1234567890",\n  "vehicleType": "Bike",\n  "address": "Borivali, Mumbai",\n  "bankDetails": {\n    "accountName": "Raju",\n    "accountNumber": "123456789012",\n    "ifscCode": "ICIC0001234",\n    "bankName": "ICICI Bank"\n  }\n}',
   "POST /api/prescriptions": '{\n  "babyId": "64f719d3f1a2b3c4d5e6f7a8",\n  "medicines": [\n    { "name": "Paracetamol", "dosage": "5ml", "timing": "Morning", "duration": "3 days" }\n  ],\n  "advice": "Rest well",\n  "nextVisitDate": "2024-02-01"\n}',
   "POST /api/appointments": '{\n  "doctorId": "64f719d3f1a2b3c4d5e6f7a8",\n  "babyId": "64f719d3f1a2b3c4d5e6f7a8",\n  "date": "2024-12-01",\n  "timeSlot": "10:00",\n  "type": "online"\n}',
   "PATCH /api/appointments/:id/status": '{\n  "status": "completed"\n}',
@@ -67,7 +70,7 @@ const payloadDictionary = {
   "PUT /api/support/:id/reply": '{\n  "message": "Thank you, waiting for the resolution."\n}'
 };
 
-const createPostmanReq = (pathName, method) => {
+const createPostmanReq = (pathName, method, roleKey) => {
   const urlPath = pathName.split('/').filter(p => p);
   const pathVars = urlPath.filter(p => p.startsWith(':')).map(p => p.replace(':', ''));
   
@@ -84,7 +87,8 @@ const createPostmanReq = (pathName, method) => {
   
   if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
     const key = `${method.toUpperCase()} ${pathName}`;
-    const rawBody = payloadDictionary[key] || "{\n  \n}";
+    const roleKeySpecific = `${key}|${roleKey}`;
+    const rawBody = payloadDictionary[roleKeySpecific] || payloadDictionary[key] || "{\n  \n}";
     req.body = { mode: "raw", raw: rawBody, options: { raw: { language: "json" } } };
   }
   
@@ -130,13 +134,16 @@ routes.forEach(({ method, path: pathName }) => {
         folder = { name: folderName, item: [] };
         roleData.items.push(folder);
       }
-      folder.item.push(createPostmanReq(pathName, method));
+      folder.item.push(createPostmanReq(pathName, method, roleKey));
       
       // Add to MD
       let mdBlock = `### **${method.toUpperCase()}** \`${pathName}\``;
       const key = `${method.toUpperCase()} ${pathName}`;
-      if (payloadDictionary[key]) {
-        mdBlock += `\n**Example Request Body:**\n\`\`\`json\n${payloadDictionary[key]}\n\`\`\``;
+      const roleKeySpecific = `${key}|${roleKey}`;
+      const payload = payloadDictionary[roleKeySpecific] || payloadDictionary[key];
+      
+      if (payload) {
+        mdBlock += `\n**Example Request Body:**\n\`\`\`json\n${payload}\n\`\`\``;
       }
       roleData.md.push(mdBlock);
     }

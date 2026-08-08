@@ -86,11 +86,27 @@ Import the `doctor_complete_postman.json` file from your backend folder into Pos
 **Example Request Body:**
 ```json
 {
-  "name": "Updated Name",
-  "address": "123 Main St",
+  "name": "Dr. Ramesh Gupta",
   "specialization": "Pediatrician",
-  "vehicleNumber": "MH01AB1234",
-  "kitchenName": "Healthy Bites"
+  "experienceYears": 10,
+  "clinicName": "Gupta Child Care",
+  "clinicAddress": "123 Health Street, Delhi",
+  "registrationNumber": "MCI-123456",
+  "degrees": ["MBBS", "MD Pediatrics"],
+  "qualifications": ["Child Nutrition Specialist"],
+  "languagesSpoken": ["Hindi", "English"],
+  "consultationFee": 500,
+  "isAvailable": true,
+  "timings": {
+    "start": "09:00",
+    "end": "17:00"
+  },
+  "bankDetails": {
+    "accountName": "Ramesh Gupta",
+    "accountNumber": "123456789012",
+    "ifscCode": "SBIN0001234",
+    "bankName": "State Bank of India"
+  }
 }
 ```
 
