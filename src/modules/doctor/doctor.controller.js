@@ -58,9 +58,29 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
+// @desc    Get available slots for a doctor on a specific date
+// @route   GET /api/doctors/:id/available-slots
+// @access  Public
+const getAvailableSlots = async (req, res) => {
+  try {
+    const { date } = req.query;
+    if (!date) {
+      return res.status(400).json({ success: false, message: 'Date is required (YYYY-MM-DD)' });
+    }
+    const slots = await doctorService.getAvailableSlots(req.params.id, date);
+    res.status(200).json({ success: true, data: slots });
+  } catch (error) {
+    if (error.message === 'Doctor profile not found') {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getDoctors,
   getDoctor,
   updateDoctor,
-  deleteDoctor
+  deleteDoctor,
+  getAvailableSlots
 };

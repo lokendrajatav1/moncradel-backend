@@ -42,9 +42,18 @@ const doctorSchema = new mongoose.Schema(
       type: [String],
       default: []
     },
-    timings: {
-      start: { type: String }, // e.g. "09:00"
-      end: { type: String }    // e.g. "17:00"
+    availability: [
+      {
+        dayOfWeek: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
+        shifts: [{
+          startTime: { type: String }, // e.g. "09:00"
+          endTime: { type: String }    // e.g. "17:00"
+        }]
+      }
+    ],
+    slotDuration: {
+      type: Number,
+      default: 30
     },
     bankDetails: {
       accountName: { type: String },
@@ -60,6 +69,13 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending'
+    },
+    about: {
+      type: String
+    },
+    reviewsCount: {
+      type: Number,
+      default: 0
     },
     rejectionReason: {
       type: String,

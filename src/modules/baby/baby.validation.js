@@ -10,6 +10,7 @@ const addBabySchema = z.object({
   height: z.coerce.number().min(0).optional(),
   medicalCondition: z.string().optional(),
   diet: z.string().optional(),
+  bloodType: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
   allergies: z.preprocess((val) => {
     if (typeof val === 'string') {
       try {

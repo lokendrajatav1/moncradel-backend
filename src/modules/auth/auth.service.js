@@ -68,6 +68,7 @@ const createUser = async (userData) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    avatar: user.avatar,
     token: generateToken(user._id)
   };
 };
@@ -101,6 +102,7 @@ const authenticateUser = async (email, password) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    avatar: user.avatar,
     token: generateToken(user._id)
   };
 };
@@ -188,6 +190,7 @@ const verifyOtp = async (phone, otpCode) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    avatar: user.avatar,
     token: generateToken(user._id)
   };
 };
@@ -216,12 +219,26 @@ const forgotPassword = async (email) => {
   // Create reset url
   const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
 
-  // MOCK SEND EMAIL
-  console.log(`\n[EMAIL MOCK to ${user.email}]`);
-  console.log(`Subject: Password Reset Request`);
-  console.log(`Message: You are receiving this because you requested a password reset.`);
-  console.log(`Option 1 (App): Enter this OTP: ${otp}`);
-  console.log(`Option 2 (Web): Click this link: ${resetUrl}\n`);
+  // ACTUALLY SEND EMAIL
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Moncradel - Password Reset Request',
+      text: `You requested a password reset.\nOption 1 (App): Enter this OTP: ${otp}\nOption 2 (Web): Click this link: ${resetUrl}`,
+      html: `<h2>Moncradel Password Reset</h2>
+             <p>You requested a password reset.</p>
+             <p><strong>Option 1 (App):</strong> Enter this OTP: <strong>${otp}</strong></p>
+             <p><strong>Option 2 (Web):</strong> <a href="${resetUrl}">Click here to reset your password</a></p>`
+    });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+    throw new Error('Email could not be sent. Please try again.');
+  }
 
   return { 
     message: 'Email sent with OTP and Reset Link',

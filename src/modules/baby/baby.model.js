@@ -43,6 +43,14 @@ const babySchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  bloodType: {
+    type: String,
+    enum: {
+      values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+      message: '{VALUE} is not a valid blood type'
+    },
+    trim: true
+  },
   allergies: {
     type: [String],
     default: []
