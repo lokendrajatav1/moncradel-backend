@@ -65,8 +65,8 @@ const getOrders = async (req, res) => {
       filters.$or = [
         { parentId: { $in: users.map(u => u._id) } },
         { babyId: { $in: babies.map(b => b._id) } },
-        { mealId: { $in: meals.map(m => m._id) } },
-        { productId: { $in: products.map(p => p._id) } },
+        { 'items.mealId': { $in: meals.map(m => m._id) } },
+        { 'items.productId': { $in: products.map(p => p._id) } },
         { status: { $regex: searchRegex } },
         { $expr: { $regexMatch: { input: { $toString: '$_id' }, regex: searchRegex } } }
       ];

@@ -8,24 +8,18 @@ const APIFeatures = require('../../utils/apiFeatures');
  */
 const createOrder = async (orderData, parentId) => {
   let finalPrice = 0;
+  let hasProduct = false;
 
-  if (orderData.mealId) {
-    const meal = await Meal.findById(orderData.mealId);
-    if (meal) {
-      finalPrice = (meal.discountedPrice && meal.discountedPrice > 0) ? meal.discountedPrice : meal.price;
-    }
-  } else if (orderData.productId) {
-    const product = await Product.findById(orderData.productId);
-    if (product) {
-      finalPrice = (product.discountedPrice && product.discountedPrice > 0) ? product.discountedPrice : product.price;
-    }
+  for (const item of orderData.items || []) {
+    if (item.itemType === 'product') hasProduct = true;
+    finalPrice += (item.priceAtAddition || 0) * (item.quantity || 1);
   }
 
   let isOtpRequired = false;
   let deliveryOtp = undefined;
 
-  // Rule: OTP required if it's a product OR total price >= 1000
-  if (orderData.productId || finalPrice >= 1000) {
+  // Rule: OTP required if it contains a product OR total price >= 1000
+  if (hasProduct || finalPrice >= 1000) {
     isOtpRequired = true;
     deliveryOtp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
   }
@@ -56,8 +50,8 @@ const getOrders = async (filters = {}, queryString = {}) => {
   const data = await features.query
     .populate('parentId', 'name email phone')
     .populate('babyId', 'name ageInMonths allergies')
-    .populate('mealId', 'name price imageUrl nutritionalInfo discountedPrice')
-    .populate('productId', 'name price imageUrl discountedPrice')
+    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice')
+    .populate('items.productId', 'name price imageUrl discountedPrice')
     .populate('kitchenId', 'name phone')
     .populate('deliveryId', 'name phone');
 

@@ -46,6 +46,7 @@ const updateUserProfile = async (req, res) => {
     if (req.body.name) baseUpdates.name = req.body.name;
     if (req.body.email) baseUpdates.email = req.body.email;
     if (req.body.phone) baseUpdates.phone = req.body.phone;
+    if (req.body.address) baseUpdates.address = req.body.address;
 
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'avatars');
@@ -58,6 +59,7 @@ const updateUserProfile = async (req, res) => {
       if (baseUpdates.email) req.user.email = baseUpdates.email;
       if (baseUpdates.phone) req.user.phone = baseUpdates.phone;
       if (baseUpdates.avatar) req.user.avatar = baseUpdates.avatar;
+      if (baseUpdates.address) req.user.address = baseUpdates.address;
     }
 
     // Update specific profile fields

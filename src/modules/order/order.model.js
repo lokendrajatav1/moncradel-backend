@@ -8,17 +8,32 @@ const orderSchema = new mongoose.Schema({
   },
   babyId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Baby',
-    required: true
+    ref: 'Baby'
   },
-  mealId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Meal' // Optional if ordering a product instead
-  },
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product' // Optional if ordering a meal instead
-  },
+  items: [{
+    itemType: {
+      type: String,
+      enum: ['meal', 'product'],
+      required: true
+    },
+    mealId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Meal'
+    },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    priceAtAddition: {
+      type: Number,
+      required: true
+    }
+  }],
   kitchenId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User' // Assigned when kitchen accepts

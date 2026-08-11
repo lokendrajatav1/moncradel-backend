@@ -12,10 +12,7 @@ const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    // TEMP FIX: Bypass auth for development since login isn't ready
-    req.user = { id: '5f9d88b9c3b9b40017b2f6b8', role: 'admin', name: 'Dev Admin' };
-    return next();
-    // return res.status(401).json({ success: false, message: 'Not authorized to access this route' });
+    return res.status(401).json({ success: false, message: 'Not authorized to access this route, no token provided' });
   }
 
   try {
@@ -28,10 +25,7 @@ const protect = async (req, res, next) => {
     
     next();
   } catch (err) {
-    // TEMP FIX: Bypass auth for development since login isn't ready
-    req.user = { id: '5f9d88b9c3b9b40017b2f6b8', role: 'admin', name: 'Dev Admin' };
-    return next();
-    // return res.status(401).json({ success: false, message: 'Not authorized to access this route' });
+    return res.status(401).json({ success: false, message: 'Not authorized to access this route, token failed' });
   }
 };
 

@@ -61,10 +61,32 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
 
   features.sort().paginate();
 
-  const data = await features.query
+  const rawData = await features.query
     .populate('babyId', 'name ageInMonths')
-    .populate('doctorId', 'name')
-    .populate('parentId', 'name phone');
+    .populate('doctorId', 'name avatar phone')
+    .populate('parentId', 'name phone')
+    .lean();
+
+  const Doctor = require('../doctor/doctor.model');
+  const doctorUserIds = rawData.map(app => app.doctorId?._id).filter(Boolean);
+  const doctors = await Doctor.find({ user: { $in: doctorUserIds } });
+  
+  const doctorMap = {};
+  doctors.forEach(doc => {
+    doctorMap[doc.user.toString()] = doc;
+  });
+
+  const data = rawData.map(app => {
+    if (app.doctorId && doctorMap[app.doctorId._id.toString()]) {
+      const docInfo = doctorMap[app.doctorId._id.toString()];
+      app.doctorId.specialization = docInfo.specialization;
+      app.doctorId.clinicName = docInfo.clinicName;
+      app.doctorId.clinicAddress = docInfo.clinicAddress;
+      app.doctorId.experienceYears = docInfo.experienceYears;
+      app.doctorId.consultationFee = docInfo.consultationFee;
+    }
+    return app;
+  });
 
   return { data, totalCount };
 };
