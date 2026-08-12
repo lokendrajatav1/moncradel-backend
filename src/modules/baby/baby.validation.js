@@ -22,7 +22,8 @@ const addBabySchema = z.object({
     }
     return val;
   }, z.array(z.string()).optional()),
-  assignedDoctorId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional()
+  assignedDoctorId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
+  parentId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional()
 });
 
 const updateBabySchema = addBabySchema.partial();

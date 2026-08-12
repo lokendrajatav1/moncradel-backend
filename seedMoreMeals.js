@@ -35,7 +35,9 @@ const generateMeals = () => {
         fat: Math.floor(Math.random() * 5) 
       },
       price: price,
-      discountedPrice: discountedPrice
+      discountedPrice: discountedPrice,
+      imageUrl: "/images/meal_food.png",
+      images: ["/images/meal_food.png"]
     });
   }
   

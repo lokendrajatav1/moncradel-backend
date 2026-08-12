@@ -98,9 +98,37 @@ const updateBaby = async (req, res) => {
   }
 };
 
+const deleteBaby = async (req, res) => {
+  try {
+    const baby = await babyService.getBabyById(req.params.id);
+    if (!baby) {
+      return res.status(404).json({ success: false, message: 'Baby not found' });
+    }
+
+    // Auth check
+    if (req.user.role !== 'admin' && req.user.role !== 'parent') {
+      return res.status(403).json({ success: false, message: 'Unauthorized to delete this baby' });
+    }
+    
+    // Ensure parent can only delete their own baby profile
+    if (req.user.role === 'parent' && baby.parentId) {
+      const parentIdStr = baby.parentId._id ? baby.parentId._id.toString() : baby.parentId.toString();
+      if (parentIdStr !== req.user.id) {
+        return res.status(403).json({ success: false, message: 'Unauthorized to delete this baby' });
+      }
+    }
+
+    await babyService.deleteBaby(req.params.id);
+    res.status(200).json({ success: true, message: 'Baby deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   addBaby,
   getBabies,
   getBabyById,
-  updateBaby
+  updateBaby,
+  deleteBaby
 };
