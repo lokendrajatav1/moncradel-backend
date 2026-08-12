@@ -4,7 +4,7 @@ const Address = require('./address.model');
  * Add a new address
  */
 const addAddress = async (userId, addressData) => {
-  const { title, street, city, zipCode, phone, isDefault } = addressData;
+  const { title, street, city, state, zipCode, phone, isDefault } = addressData;
 
   // If this is set as default, remove default from others
   if (isDefault) {
@@ -16,6 +16,7 @@ const addAddress = async (userId, addressData) => {
     title,
     street,
     city,
+    state,
     zipCode,
     phone,
     isDefault: isDefault || false

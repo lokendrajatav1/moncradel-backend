@@ -41,20 +41,63 @@ const addMeal = async (mealData, files) => {
  */
 const getAllMeals = async (query = {}) => {
   const page = parseInt(query.page, 10) || 1;
-  const limit = parseInt(query.limit, 10) || 10;
+  const limit = parseInt(query.limit, 10) || 12;
   const skip = (page - 1) * limit;
 
   const filters = {};
-  if (query.ageGroup) {
+  
+  if (query.ageGroup && query.ageGroup !== "All Ages") {
     filters.suitableForAgeGroup = query.ageGroup;
   }
+  
+  if (query.category && query.category !== "All") {
+    filters.category = query.category;
+  }
+
+  if (query.minPrice || query.maxPrice) {
+    filters.price = {};
+    if (query.minPrice) filters.price.$gte = parseInt(query.minPrice, 10);
+    if (query.maxPrice) filters.price.$lte = parseInt(query.maxPrice, 10);
+  }
+
+  if (query.preferences) {
+    const prefs = query.preferences.split(',');
+    filters.$and = filters.$and || [];
+    filters.$and.push({
+      $or: [
+        { name: { $in: prefs.map(p => new RegExp(p, 'i')) } },
+        { ingredients: { $in: prefs.map(p => new RegExp(p, 'i')) } }
+      ]
+    });
+  }
+
   if (query.search) {
-    filters.name = { $regex: new RegExp(query.search, 'i') };
+    const searchRegex = new RegExp(query.search, 'i');
+    filters.$and = filters.$and || [];
+    filters.$and.push({
+      $or: [
+        { name: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } },
+        { category: { $regex: searchRegex } },
+        { ingredients: { $regex: searchRegex } }
+      ]
+    });
+  }
+
+  // Determine Sorting
+  let sortObj = { createdAt: -1 }; // Default Newest
+  if (query.sortBy === "Price: Low to High") {
+    sortObj = { price: 1 };
+  } else if (query.sortBy === "Price: High to Low") {
+    sortObj = { price: -1 };
+  } else if (query.sortBy === "Popularity") {
+    // Fake popularity by keeping createdAt or adding another field
+    sortObj = { createdAt: 1 }; 
   }
 
   const count = await Meal.countDocuments(filters);
   const meals = await Meal.find(filters)
-    .sort('-createdAt')
+    .sort(sortObj)
     .skip(skip)
     .limit(limit);
 

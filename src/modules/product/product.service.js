@@ -55,7 +55,13 @@ const addProduct = async (productData, files) => {
 const getAllProducts = async (queryString = {}) => {
   let filter = {};
   if (queryString.search) {
-    filter.name = { $regex: new RegExp(queryString.search, 'i') };
+    const searchRegex = new RegExp(queryString.search, 'i');
+    filter.$or = [
+      { name: { $regex: searchRegex } },
+      { description: { $regex: searchRegex } },
+      { category: { $regex: searchRegex } },
+      { brand: { $regex: searchRegex } }
+    ];
   }
   // Always delete search so APIFeatures doesn't treat it as a database field
   delete queryString.search;

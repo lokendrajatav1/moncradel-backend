@@ -50,11 +50,19 @@ const updateBaby = async (babyId, updateData) => {
   return await Baby.findByIdAndUpdate(babyId, updateData, { new: true, runValidators: true });
 };
 
+/**
+ * Delete baby profile
+ */
+const deleteBaby = async (babyId) => {
+  return await Baby.findByIdAndDelete(babyId);
+};
+
 module.exports = {
   addBaby,
   getBabiesByParent,
   getBabiesByDoctor,
   getAllBabies,
   getBabyById,
-  updateBaby
+  updateBaby,
+  deleteBaby
 };

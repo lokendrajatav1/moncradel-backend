@@ -33,9 +33,9 @@ const getDashboardAnalytics = async () => {
     .sort('-createdAt')
     .limit(5)
     .populate('parentId', 'name')
-    .populate('mealId', 'name')
-    .populate('productId', 'name')
-    .select('parentId mealId productId totalAmount status createdAt');
+    .populate('items.mealId', 'name')
+    .populate('items.productId', 'name')
+    .select('parentId items totalAmount status createdAt');
 
   // 6. Weekly Revenue (last 7 days)
   const weeklyRevenue = [];
@@ -63,8 +63,9 @@ const getDashboardAnalytics = async () => {
 
   // 7. Top Selling Meals (Top 5)
   const topMeals = await Order.aggregate([
-    { $match: { mealId: { $exists: true, $ne: null } } },
-    { $group: { _id: '$mealId', count: { $sum: 1 } } },
+    { $unwind: '$items' },
+    { $match: { 'items.mealId': { $exists: true, $ne: null } } },
+    { $group: { _id: '$items.mealId', count: { $sum: '$items.quantity' } } },
     { $sort: { count: -1 } },
     { $limit: 5 },
     { $lookup: { from: 'meals', localField: '_id', foreignField: '_id', as: 'meal' } },
