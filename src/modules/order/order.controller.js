@@ -85,8 +85,7 @@ const getOrders = async (req, res) => {
       if (req.user.role === 'parent') {
         filters.parentId = req.user._id;
       } else if (req.user.role === 'kitchen') {
-        // Kitchen might see pending orders or orders assigned to them
-        filters.status = { $in: ['pending', 'preparing', 'ready'] };
+        // Kitchen gets all orders so dashboard can show history, including delivered and cancelled
       } else if (req.user.role === 'delivery') {
         // Delivery sees ready or out for delivery
         filters.status = { $in: ['ready', 'out_for_delivery'] };
