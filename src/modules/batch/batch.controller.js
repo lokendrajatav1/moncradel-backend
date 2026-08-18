@@ -41,6 +41,10 @@ const updateBatchStatus = async (req, res, next) => {
 // @access  Private
 const getBatches = async (req, res, next) => {
   try {
+    if (req.user && req.user.role === 'kitchen') {
+      req.query.kitchenId = req.user._id || req.user.id;
+    }
+
     const result = await batchService.getBatches(req.query);
     res.status(200).json({ 
       success: true, 

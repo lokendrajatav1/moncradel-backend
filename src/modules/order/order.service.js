@@ -52,7 +52,7 @@ const getOrders = async (filters = {}, queryString = {}) => {
     .populate('babyId', 'name ageInMonths allergies')
     .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice')
     .populate('items.productId', 'name price imageUrl discountedPrice')
-    .populate('kitchenId', 'name phone')
+    .populate('kitchenId', 'name phone address')
     .populate('deliveryId', 'name phone');
 
   return { totalCount, data };

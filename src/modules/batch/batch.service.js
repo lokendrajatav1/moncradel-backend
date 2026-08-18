@@ -11,7 +11,11 @@ const createBatch = async (kitchenId, batchData) => {
   const batchNumber = `BATCH-${Date.now()}`;
 
   // 2. Find pending orders for this meal, limited by quantity
-  const pendingOrders = await Order.find({ mealId, status: 'pending' })
+  const pendingOrders = await Order.find({ 
+    'items.mealId': mealId, 
+    status: 'pending',
+    kitchenId: { $in: [null, undefined] } // Ensure it's not already assigned
+  })
     .limit(quantity)
     .select('_id');
   
@@ -26,6 +30,14 @@ const createBatch = async (kitchenId, batchData) => {
     cookedBy: kitchenId,
     status: 'pending'
   });
+
+  // Assign the linked orders to this kitchen
+  if (orderIds.length > 0) {
+    await Order.updateMany(
+      { _id: { $in: orderIds } },
+      { $set: { kitchenId } }
+    );
+  }
 
   return batch;
 };
@@ -44,26 +56,41 @@ const updateBatchStatus = async (batchId, statusData, io) => {
 
   if (!batch) throw new Error('Batch not found');
 
-  // AUTOMATION: If batch is ready, all orders become 'ready'
+  // AUTOMATION: If batch is ready, specific items become 'ready'
   if (status === 'ready' && batch.orderIds && batch.orderIds.length > 0) {
     await Order.updateMany(
       { _id: { $in: batch.orderIds } },
-      { status: 'ready', readyAt: new Date() }
+      { $set: { 'items.$[elem].status': 'ready' } },
+      { arrayFilters: [{ 'elem.mealId': batch.mealId }] }
     );
     
-    // Emit socket event to notify delivery drivers for all these orders
-    if (io) {
-      batch.orderIds.forEach(orderId => {
-        io.to(`order_${orderId}`).emit('status_update', { orderId, status: 'ready' });
-      });
+    // Check if parent orders are fully ready
+    const orders = await Order.find({ _id: { $in: batch.orderIds } });
+    for (const order of orders) {
+      const allReady = order.items.every(item => item.status === 'ready');
+      if (allReady && order.status !== 'ready') {
+        order.status = 'ready';
+        order.readyAt = new Date();
+        await order.save();
+        if (io) {
+          io.to(`order_${order._id}`).emit('status_update', { orderId: order._id, status: 'ready' });
+        }
+      }
     }
   }
 
-  // AUTOMATION: If batch is preparing, all assigned orders become 'preparing'
+  // AUTOMATION: If batch is preparing, specific items become 'preparing'
   if (status === 'preparing' && batch.orderIds && batch.orderIds.length > 0) {
     await Order.updateMany(
       { _id: { $in: batch.orderIds } },
-      { status: 'preparing', preparingAt: new Date() }
+      { 
+        $set: { 
+          'items.$[elem].status': 'preparing',
+          status: 'preparing', // parent becomes preparing if any item is preparing
+          preparingAt: new Date()
+        } 
+      },
+      { arrayFilters: [{ 'elem.mealId': batch.mealId }] }
     );
   }
 
@@ -78,7 +105,23 @@ const getBatches = async (query = {}) => {
   const limit = parseInt(query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  let pipeline = [
+  let pipeline = [];
+  let initialMatch = {};
+
+  if (query.kitchenId) {
+    const mongoose = require('mongoose');
+    try {
+      initialMatch.cookedBy = new mongoose.Types.ObjectId(query.kitchenId);
+    } catch(e) {
+      initialMatch.cookedBy = query.kitchenId;
+    }
+  }
+
+  if (Object.keys(initialMatch).length > 0) {
+    pipeline.push({ $match: initialMatch });
+  }
+
+  pipeline.push(
     {
       $lookup: {
         from: 'meals',
@@ -88,7 +131,7 @@ const getBatches = async (query = {}) => {
       }
     },
     { $unwind: { path: '$mealId', preserveNullAndEmptyArrays: true } }
-  ];
+  );
 
   if (query.search) {
     const searchRegex = new RegExp(query.search, 'i');

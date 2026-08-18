@@ -32,6 +32,11 @@ const orderSchema = new mongoose.Schema({
     priceAtAddition: {
       type: Number,
       required: true
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'preparing', 'ready', 'cancelled'],
+      default: 'pending'
     }
   }],
   kitchenId: {
@@ -57,6 +62,13 @@ const orderSchema = new mongoose.Schema({
   specialInstructions: {
     type: String,
     default: ''
+  },
+  distanceKm: {
+    type: Number,
+    default: function() {
+      // Mock distance for now (between 1.0 and 8.0)
+      return (Math.random() * 7 + 1).toFixed(1);
+    }
   },
   proofOfDeliveryImageUrl: {
     type: String,
