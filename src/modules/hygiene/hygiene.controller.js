@@ -27,11 +27,16 @@ const logHygieneTask = async (req, res, next) => {
 // @access  Private
 const getHygieneLogs = async (req, res, next) => {
   try {
+    // Enforce kitchenId filtering for kitchen partners
+    if (req.user.role === 'kitchen') {
+      req.query.kitchenId = req.user._id || req.user.id;
+    }
+
     const result = await hygieneService.getHygieneLogs(req.query);
     res.status(200).json({ 
       success: true, 
       count: result.logs.length, 
-      pagination: result.pagination,
+      pagination: result.pagination, 
       data: result.logs 
     });
   } catch (error) {
