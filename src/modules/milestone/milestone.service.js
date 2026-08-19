@@ -5,7 +5,7 @@ const { uploadToCloudinary } = require('../../utils/cloudinary');
  * Add a new milestone
  */
 const addMilestone = async (milestoneData, file) => {
-  const { babyId, title, dateAchieved, notes } = milestoneData;
+  const { babyId, title, dateAchieved, notes, category } = milestoneData;
   let photoUrl = '';
 
   if (file) {
@@ -18,7 +18,8 @@ const addMilestone = async (milestoneData, file) => {
     title,
     dateAchieved,
     photoUrl,
-    notes
+    notes,
+    category
   });
 
   return milestone;

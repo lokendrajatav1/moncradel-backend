@@ -170,10 +170,24 @@ const deleteMeal = async (id) => {
   return await Meal.findByIdAndDelete(id);
 };
 
+/**
+ * Get meal filters (dynamic categories and age groups)
+ */
+const getMealFilters = async () => {
+  const categories = await Meal.distinct('category');
+  const ageGroups = await Meal.distinct('suitableForAgeGroup');
+  
+  return {
+    categories: categories.filter(Boolean),
+    ageGroups: ageGroups.filter(Boolean)
+  };
+};
+
 module.exports = {
   addMeal,
   getAllMeals,
   getMealById,
   updateMeal,
-  deleteMeal
+  deleteMeal,
+  getMealFilters
 };

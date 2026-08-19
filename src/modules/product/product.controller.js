@@ -77,9 +77,22 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+// @desc    Get dynamic product filters
+// @route   GET /api/products/filters
+// @access  Public
+const getProductFilters = async (req, res, next) => {
+  try {
+    const filters = await productService.getProductFilters();
+    res.status(200).json({ success: true, data: filters });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addProduct,
   getProducts,
+  getProductFilters,
   getProductById,
   updateProduct,
   deleteProduct

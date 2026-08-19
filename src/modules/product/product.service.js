@@ -169,10 +169,24 @@ const deleteProduct = async (id) => {
   return product;
 };
 
+/**
+ * Get product filters (dynamic categories and age groups)
+ */
+const getProductFilters = async () => {
+  const categories = await Product.distinct('category');
+  const ageGroups = await Product.distinct('ageGroup');
+  
+  return {
+    categories: categories.filter(Boolean),
+    ageGroups: ageGroups.filter(Boolean)
+  };
+};
+
 module.exports = {
   addProduct,
   getAllProducts,
   getProductById,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductFilters
 };

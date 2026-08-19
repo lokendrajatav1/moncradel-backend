@@ -16,6 +16,9 @@ connectDB();
 // Initialize BullMQ Workers
 require('./jobs/notification.worker');
 
+// Initialize Global Event Listeners
+require('./events/notification.listeners');
+
 // Create HTTP Server and Initialize Socket.io
 const server = http.createServer(app);
 const io = initSockets(server);

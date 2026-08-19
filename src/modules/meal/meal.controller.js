@@ -107,9 +107,22 @@ const deleteMeal = async (req, res) => {
   }
 };
 
+// @desc    Get dynamic meal filters
+// @route   GET /api/meals/filters
+// @access  Public
+const getMealFilters = async (req, res) => {
+  try {
+    const filters = await mealService.getMealFilters();
+    res.status(200).json({ success: true, data: filters });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   addMeal,
   getMeals,
+  getMealFilters,
   getMealById,
   updateMeal,
   deleteMeal

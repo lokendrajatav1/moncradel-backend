@@ -125,10 +125,38 @@ const deleteReply = async (ticketId, replyId, userId, userRole) => {
     .populate('orderId', 'orderNumber status');
 };
 
+/**
+ * Mark messages as read
+ */
+const markAsRead = async (ticketId, userRole) => {
+  const ticket = await Support.findById(ticketId);
+  if (!ticket) throw new Error('Ticket not found');
+
+  let hasChanges = false;
+  
+  // If admin is reading, mark all user messages as read.
+  // If user is reading, mark all admin messages as read.
+  ticket.replies.forEach(reply => {
+    if (reply.sender !== userRole && !reply.isRead) {
+      reply.isRead = true;
+      hasChanges = true;
+    }
+  });
+
+  if (hasChanges) {
+    await ticket.save();
+  }
+
+  return await Support.findById(ticketId)
+    .populate('userId', 'name email role phone')
+    .populate('orderId', 'orderNumber status');
+};
+
 module.exports = {
   createTicket,
   getTickets,
   replyToTicket,
   editReply,
-  deleteReply
+  deleteReply,
+  markAsRead
 };

@@ -12,7 +12,7 @@ const createAdmin = async () => {
 
     const bcrypt = require('bcryptjs');
 
-    const email = process.env.ADMIN_EMAIL || 'admin@moncradel.com';
+    const email = process.env.ADMIN_EMAIL || 'admin@moncradle.com';
     const password = process.env.ADMIN_PASSWORD || 'password123';
 
     // Hash the password properly before saving!

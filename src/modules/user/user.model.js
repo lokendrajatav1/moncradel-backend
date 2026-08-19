@@ -61,7 +61,23 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpire: Date,
     avatar: {
       type: String
-    }
+    },
+    fcmToken: {
+      type: String
+    },
+    wishlist: [
+      {
+        itemType: {
+          type: String,
+          enum: ['product', 'meal'],
+          required: true
+        },
+        itemId: {
+          type: mongoose.Schema.ObjectId,
+          required: true
+        }
+      }
+    ]
   },
   {
     timestamps: true

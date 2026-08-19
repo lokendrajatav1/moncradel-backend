@@ -25,6 +25,10 @@ const growthSchema = new mongoose.Schema({
   notes: {
     type: String,
     default: ''
+  },
+  recordedDate: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true

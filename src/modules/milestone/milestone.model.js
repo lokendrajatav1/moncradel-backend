@@ -21,6 +21,10 @@ const milestoneSchema = new mongoose.Schema({
   notes: {
     type: String,
     default: ''
+  },
+  category: {
+    type: String,
+    default: 'Other'
   }
 }, {
   timestamps: true

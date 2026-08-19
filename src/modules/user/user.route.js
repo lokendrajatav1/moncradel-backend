@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUserProfile, updateUserProfile, getAllUsers, getUser, deleteUser, updateUser, verifyUser, createUserByAdmin } = require('./user.controller');
+const { getUserProfile, updateUserProfile, getAllUsers, getUser, deleteUser, updateUser, verifyUser, createUserByAdmin, getWishlist, addToWishlist, removeFromWishlist } = require('./user.controller');
 const { protect } = require('../../middleware/auth');
 const validate = require('../../middleware/validate');
 const { updateProfileSchema } = require('./user.validation');
@@ -10,6 +10,10 @@ const { registerSchema } = require('../auth/auth.validation');
 
 router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, upload.single('avatar'), validate(updateProfileSchema), updateUserProfile);
+
+router.get('/wishlist', protect, getWishlist);
+router.post('/wishlist', protect, addToWishlist);
+router.delete('/wishlist/:itemId', protect, removeFromWishlist);
 
 // Admin Routes (temporarily unprotected)
 // Admin doesn't need to provide OTP to create users

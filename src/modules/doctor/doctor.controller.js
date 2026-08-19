@@ -5,6 +5,8 @@ const doctorService = require('./doctor.service');
 // @access  Private/Admin
 const getDoctors = async (req, res) => {
   try {
+    // SECURITY FIX: Enforce that only 'approved' doctors are returned through this public route.
+    req.query.verificationStatus = 'approved';
     const doctors = await doctorService.getAllDoctors(req.query);
     res.status(200).json({ success: true, count: doctors.length, data: doctors });
   } catch (error) {

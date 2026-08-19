@@ -13,7 +13,9 @@ const nutritionPlanSchema = new mongoose.Schema({
   },
   weeklySchedule: [{
     day: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
-    mealId: { type: mongoose.Schema.Types.ObjectId, ref: 'Meal' }
+    mealId: { type: mongoose.Schema.Types.ObjectId, ref: 'Meal' },
+    eaten: { type: Boolean, default: false },
+    eatenAt: { type: Date }
   }],
   guidelines: {
     type: String,

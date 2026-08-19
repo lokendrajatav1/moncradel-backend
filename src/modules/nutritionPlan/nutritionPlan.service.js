@@ -22,7 +22,7 @@ const createNutritionPlan = async (doctorId, planData) => {
 const getNutritionPlan = async (babyId) => {
   return await NutritionPlan.find({ babyId })
     .populate('assignedBy', 'name')
-    .populate('weeklySchedule.mealId', 'name imageUrl nutritionalInfo')
+    .populate('weeklySchedule.mealId', 'name imageUrl images ingredients category nutritionalInfo price discountedPrice inStock')
     .sort('-createdAt');
 };
 
@@ -57,10 +57,72 @@ const deleteNutritionPlan = async (id) => {
   return plan;
 };
 
+/**
+ * Parent: Add a meal to a day in baby's weekly schedule.
+ * Creates a self-managed plan if none exists.
+ */
+const addMealToDay = async (babyId, parentId, day, mealId) => {
+  let plan = await NutritionPlan.findOne({ babyId }).sort('-createdAt');
+
+  if (!plan) {
+    // Create a self-managed plan for this baby
+    plan = await NutritionPlan.create({
+      babyId,
+      assignedBy: parentId,
+      weeklySchedule: [],
+      guidelines: ''
+    });
+  }
+
+  // Add the meal entry for this day
+  plan.weeklySchedule.push({ day, mealId });
+  await plan.save();
+
+  return await NutritionPlan.findById(plan._id)
+    .populate('weeklySchedule.mealId', 'name imageUrl images ingredients category nutritionalInfo price discountedPrice inStock');
+};
+
+/**
+ * Parent: Remove a specific meal from a day in baby's weekly schedule.
+ */
+const removeMealFromDay = async (babyId, day, mealId) => {
+  const plan = await NutritionPlan.findOne({ babyId }).sort('-createdAt');
+  if (!plan) throw Object.assign(new Error('No plan found'), { statusCode: 404 });
+
+  plan.weeklySchedule = plan.weeklySchedule.filter(
+    s => !(s.day === day && s.mealId?.toString() === mealId)
+  );
+  await plan.save();
+
+  return await NutritionPlan.findById(plan._id)
+    .populate('weeklySchedule.mealId', 'name imageUrl images ingredients category nutritionalInfo price discountedPrice inStock');
+};
+
+/**
+ * Toggle eaten status for a specific weeklySchedule entry
+ */
+const toggleMealEaten = async (babyId, scheduleEntryId) => {
+  const plan = await NutritionPlan.findOne({ babyId }).sort('-createdAt');
+  if (!plan) throw Object.assign(new Error('No plan found'), { statusCode: 404 });
+
+  const entry = plan.weeklySchedule.id(scheduleEntryId);
+  if (!entry) throw Object.assign(new Error('Schedule entry not found'), { statusCode: 404 });
+
+  entry.eaten = !entry.eaten;
+  entry.eatenAt = entry.eaten ? new Date() : undefined;
+  await plan.save();
+
+  return await NutritionPlan.findById(plan._id)
+    .populate('weeklySchedule.mealId', 'name imageUrl images ingredients category nutritionalInfo price discountedPrice inStock');
+};
+
 module.exports = {
   createNutritionPlan,
   getNutritionPlan,
   getAllNutritionPlans,
   updateNutritionPlan,
-  deleteNutritionPlan
+  deleteNutritionPlan,
+  addMealToDay,
+  removeMealFromDay,
+  toggleMealEaten
 };

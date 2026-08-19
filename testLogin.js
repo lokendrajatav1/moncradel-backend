@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 mongoose.connect(process.env.MONGO_URI).then(async () => {
-  const user = await User.findOne({ email: 'admin@moncradel.com' }).select('+password');
+  const user = await User.findOne({ email: 'admin@moncradle.com' }).select('+password');
   console.log('User found:', user ? user.email : 'No');
   if (user) {
     console.log('Password hash in DB:', user.password);

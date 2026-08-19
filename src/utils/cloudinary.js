@@ -6,7 +6,7 @@ const cloudinary = require('../config/cloudinary');
  * @param {String} folder - The folder name in Cloudinary
  * @returns {Promise<Object>} The Cloudinary response object
  */
-const uploadToCloudinary = (fileBuffer, folder = 'moncradel') => {
+const uploadToCloudinary = (fileBuffer, folder = 'moncradle') => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { folder: folder },

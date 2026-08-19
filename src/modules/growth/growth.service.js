@@ -5,7 +5,7 @@ const Baby = require('../baby/baby.model');
  * Add a new growth record
  */
 const addGrowthRecord = async (userId, growthData) => {
-  const { babyId, weight, height, headCircumference, notes } = growthData;
+  const { babyId, weight, height, headCircumference, notes, recordedDate } = growthData;
 
   const record = await Growth.create({
     babyId,
@@ -13,7 +13,8 @@ const addGrowthRecord = async (userId, growthData) => {
     weight,
     height,
     headCircumference,
-    notes
+    notes,
+    recordedDate: recordedDate ? new Date(recordedDate) : Date.now()
   });
 
   // Optionally update the Baby's current weight based on the latest record
