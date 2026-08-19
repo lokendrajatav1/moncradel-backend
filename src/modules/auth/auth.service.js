@@ -320,6 +320,9 @@ const sendRegisterOtp = async (email) => {
     { upsert: true, new: true }
   );
 
+  // Log OTP to console for easy testing
+  console.log(`[EMAIL MOCK] OTP for ${email} is: ${otp}`);
+
   // Send Email
   try {
     await sendEmail({
@@ -329,11 +332,12 @@ const sendRegisterOtp = async (email) => {
       html: `<h2>moncradle Verification</h2><p>Your One-Time Password (OTP) for registration is: <strong>${otp}</strong></p><p>It is valid for 10 minutes.</p>`,
     });
   } catch (error) {
-    console.error('Error sending email:', error);
-    throw new Error('Email could not be sent. Please try again.');
+    console.error('Error sending email (Continuing anyway for testing):', error);
+    // Don't throw error here during development so the frontend can proceed
+    // throw new Error('Email could not be sent. Please try again.');
   }
 
-  return { message: 'OTP sent successfully to email' };
+  return { message: 'OTP sent (or logged to console)' };
 };
 
 module.exports = {

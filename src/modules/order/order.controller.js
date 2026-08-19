@@ -89,11 +89,32 @@ const getOrders = async (req, res) => {
       if (req.user.role === 'parent') {
         filters.parentId = req.user._id;
       } else if (req.user.role === 'kitchen') {
-        // Kitchen might see pending orders or orders assigned to them
-        filters.status = { $in: ['pending', 'preparing', 'ready'] };
+        const kitchenFilter = {
+          $or: [
+            { kitchenId: req.user._id },
+            { kitchenId: { $exists: false } },
+            { kitchenId: null }
+          ]
+        };
+        if (filters.$or) {
+          filters.$and = [ { $or: filters.$or }, kitchenFilter ];
+          delete filters.$or;
+        } else {
+          filters.$or = kitchenFilter.$or;
+        }
       } else if (req.user.role === 'delivery') {
-        // Delivery sees ready or out for delivery
-        filters.status = { $in: ['ready', 'out_for_delivery'] };
+        const deliveryFilter = {
+          $or: [
+            { status: 'ready' },
+            { status: { $in: ['out_for_delivery', 'delivered'] }, deliveryId: req.user._id }
+          ]
+        };
+        if (filters.$or) {
+          filters.$and = [ { $or: filters.$or }, deliveryFilter ];
+          delete filters.$or;
+        } else {
+          filters.$or = deliveryFilter.$or;
+        }
       }
     }
     // If no req.user (admin unprotected testing), filters remain {} -> returns all orders.

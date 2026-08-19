@@ -32,7 +32,28 @@ const getHygieneLogs = async (query = {}) => {
   const limit = parseInt(query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  let pipeline = [
+  let pipeline = [];
+  let initialMatch = {};
+
+  if (query.kitchenId) {
+    const mongoose = require('mongoose');
+    // Ensure we handle either ObjectId or string properly
+    try {
+      initialMatch.kitchenId = new mongoose.Types.ObjectId(query.kitchenId);
+    } catch (e) {
+      initialMatch.kitchenId = query.kitchenId;
+    }
+  }
+
+  if (query.date) {
+    initialMatch.date = query.date;
+  }
+
+  if (Object.keys(initialMatch).length > 0) {
+    pipeline.push({ $match: initialMatch });
+  }
+
+  pipeline.push(
     {
       $lookup: {
         from: 'users',
@@ -42,7 +63,7 @@ const getHygieneLogs = async (query = {}) => {
       }
     },
     { $unwind: { path: '$kitchenId', preserveNullAndEmptyArrays: true } }
-  ];
+  );
 
   if (query.search) {
     const searchRegex = new RegExp(query.search, 'i');
