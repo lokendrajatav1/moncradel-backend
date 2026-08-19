@@ -2,6 +2,7 @@ const Notification = require('./notification.model');
 const Broadcast = require('./broadcast.model');
 const User = require('../user/user.model');
 const Subscription = require('../subscription/subscription.model');
+const { sendPushNotification } = require('../../config/firebase');
 
 /**
  * Get user notifications
@@ -65,7 +66,7 @@ const sendBroadcast = async (broadcastData) => {
     query._id = { $in: activeSubscriptions };
   }
 
-  const users = await User.find(query).select('_id');
+  const users = await User.find(query).select('_id fcmToken');
   
   if (users.length === 0) {
     throw new Error('No users found for this audience');
@@ -89,6 +90,14 @@ const sendBroadcast = async (broadcastData) => {
   }));
 
   await Notification.insertMany(notificationsToInsert);
+  
+  // Send actual push notifications via Firebase
+  users.forEach(u => {
+    if (u.fcmToken) {
+      sendPushNotification(u.fcmToken, title, message);
+    }
+  });
+
   return broadcast;
 };
 

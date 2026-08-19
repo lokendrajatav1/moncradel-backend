@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createTicket, getTickets, replyToTicket, editReply, deleteReply } = require('./support.controller');
+const { createTicket, getTickets, replyToTicket, editReply, deleteReply, markAsRead } = require('./support.controller');
 const { protect } = require('../../middleware/auth');
 const validate = require('../../middleware/validate');
 const { ticketSchema } = require('./support.validation');
@@ -15,5 +15,7 @@ router.route('/:id/reply')
 router.route('/:id/reply/:replyId')
   .put(protect, editReply)
   .delete(protect, deleteReply);
+
+router.put('/:id/read', protect, markAsRead);
 
 module.exports = router;

@@ -65,10 +65,58 @@ const deleteNutritionPlan = async (req, res, next) => {
   }
 };
 
+// @desc    Parent: Add a meal to a specific day
+// @route   POST /api/nutrition-plans/baby/:babyId/schedule
+// @access  Private (Parent)
+const addMealToDay = async (req, res, next) => {
+  try {
+    const { day, mealId } = req.body;
+    if (!day || !mealId) {
+      return res.status(400).json({ success: false, message: 'day and mealId are required' });
+    }
+    const userId = req.user._id || req.user.id;
+    const plan = await nutritionPlanService.addMealToDay(req.params.babyId, userId, day, mealId);
+    res.status(200).json({ success: true, data: plan });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Parent: Remove a meal from a specific day
+// @route   DELETE /api/nutrition-plans/baby/:babyId/schedule
+// @access  Private (Parent)
+const removeMealFromDay = async (req, res, next) => {
+  try {
+    const { day, mealId } = req.body;
+    if (!day || !mealId) {
+      return res.status(400).json({ success: false, message: 'day and mealId are required' });
+    }
+    const plan = await nutritionPlanService.removeMealFromDay(req.params.babyId, day, mealId);
+    res.status(200).json({ success: true, data: plan });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Toggle eaten status for a schedule entry
+// @route   PATCH /api/nutrition-plans/baby/:babyId/schedule/:entryId/eaten
+// @access  Private
+const toggleMealEaten = async (req, res, next) => {
+  try {
+    const plan = await nutritionPlanService.toggleMealEaten(req.params.babyId, req.params.entryId);
+    res.status(200).json({ success: true, data: plan });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createNutritionPlan,
   getNutritionPlan,
   getAllNutritionPlans,
   updateNutritionPlan,
-  deleteNutritionPlan
+  deleteNutritionPlan,
+  addMealToDay,
+  removeMealFromDay,
+  toggleMealEaten
 };

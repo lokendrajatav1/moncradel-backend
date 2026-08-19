@@ -18,7 +18,7 @@ const sendEmail = async (options) => {
 
   // Define email options
   const mailOptions = {
-    from: `"Moncradel Support" <${process.env.SMTP_USER}>`,
+    from: `"moncradle Support" <${process.env.SMTP_USER}>`,
     to: options.to,
     subject: options.subject,
     text: options.text,

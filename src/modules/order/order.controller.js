@@ -2,6 +2,7 @@ const orderService = require('./order.service');
 const { uploadToCloudinary } = require('../../utils/cloudinary');
 const Earning = require('../earning/earning.model'); // We will create this
 const Order = require('./order.model');
+const eventEmitter = require('../../events/eventEmitter');
 
 // @desc    Create a new order
 // @route   POST /api/orders
@@ -23,6 +24,9 @@ const createOrder = async (req, res) => {
 
     const order = await orderService.createOrder(req.body, parentId);
 
+    // Notify listeners about the new order (e.g., for push notifications, emails, etc.)
+    eventEmitter.emit('order.created', { order, user: req.user });
+
     // Emitting real-time event to the kitchen using Socket.io
     const io = req.app.get('io');
     if (io) {
@@ -41,13 +45,13 @@ const createOrder = async (req, res) => {
 const getOrders = async (req, res) => {
   try {
     let filters = {};
-    
+
     // Quick search logic across related collections
     if (req.query.search) {
       // Remove leading # if user searches for #123456
       const searchTerm = req.query.search.replace(/^#/, '');
       const searchRegex = new RegExp(searchTerm, 'i');
-      
+
       const [User, Baby, Meal, Product] = [
         require('../user/user.model'),
         require('../baby/baby.model'),
@@ -77,7 +81,7 @@ const getOrders = async (req, res) => {
         filters.$or.push({ _id: searchTerm });
       }
     }
-    
+
     // Always remove search to prevent APIFeatures from processing it directly
     delete req.query.search;
 
@@ -148,7 +152,7 @@ const updateOrderStatus = async (req, res) => {
     // Proof of delivery logic
     if (req.user && status === 'delivered' && req.user.role === 'delivery') {
       const orderToDeliver = await Order.findById(req.params.id);
-      
+
       if (orderToDeliver.isOtpRequired) {
         if (!otp || otp !== orderToDeliver.deliveryOtp) {
           return res.status(400).json({ success: false, message: 'Invalid or missing OTP for delivery' });
@@ -159,7 +163,7 @@ const updateOrderStatus = async (req, res) => {
         const uploadResult = await uploadToCloudinary(req.file.buffer, 'proofs');
         updatedFields.proofOfDeliveryImageUrl = uploadResult.secure_url;
       }
-      
+
       // Auto-generate Earning for the delivery driver (Fixed ₹50 for now)
       try {
         await Earning.create({
@@ -174,7 +178,7 @@ const updateOrderStatus = async (req, res) => {
     }
 
     const order = await orderService.updateOrderStatus(req.params.id, status, updatedFields);
-    
+
     // Broadcast status update to the specific order room
     const io = req.app.get('io');
     if (io) {

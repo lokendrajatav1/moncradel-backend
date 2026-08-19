@@ -1,6 +1,7 @@
 const { z } = require('zod');
 
 const createOrderSchema = z.object({
+  parentId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
   babyId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
   items: z.array(z.object({
     itemType: z.enum(['meal', 'product']),
@@ -18,6 +19,22 @@ const createOrderSchema = z.object({
   specialInstructions: z.string().optional()
 });
 
+const updateOrderSchema = z.object({
+  status: z.string().optional(),
+  deliveryAddress: z.object({
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    phone: z.string().optional()
+  }).optional(),
+  cancellationReason: z.string().optional(),
+  kitchenId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
+  deliveryId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
+  otp: z.string().optional()
+});
+
 module.exports = {
-  createOrderSchema
+  createOrderSchema,
+  updateOrderSchema
 };

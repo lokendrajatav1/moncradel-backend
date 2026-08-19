@@ -1,4 +1,5 @@
 const appointmentService = require('./appointment.service');
+const eventEmitter = require('../../events/eventEmitter');
 
 // @desc    Create a new appointment
 // @route   POST /api/appointments
@@ -15,6 +16,10 @@ const createAppointment = async (req, res, next) => {
     }
 
     const appointment = await appointmentService.createAppointment(parentId, req.body);
+    
+    // Notify listeners about the new appointment
+    eventEmitter.emit('appointment.created', { appointment, user: req.user });
+
     res.status(201).json({ success: true, data: appointment });
   } catch (error) {
     next(error);

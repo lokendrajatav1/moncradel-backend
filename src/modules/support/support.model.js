@@ -42,6 +42,10 @@ const supportSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
+    isRead: {
+      type: Boolean,
+      default: false
+    },
     quotedReplyId: {
       type: mongoose.Schema.Types.ObjectId,
       default: null

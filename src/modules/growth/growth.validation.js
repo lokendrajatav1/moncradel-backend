@@ -5,7 +5,8 @@ const growthSchema = z.object({
   weight: z.number().min(0.5, { message: 'Weight must be at least 0.5 kg' }),
   height: z.number().min(10, { message: 'Height must be at least 10 cm' }),
   headCircumference: z.number().optional(),
-  notes: z.string().optional()
+  notes: z.string().optional(),
+  recordedDate: z.string().datetime().optional().or(z.date().optional())
 });
 
 module.exports = {

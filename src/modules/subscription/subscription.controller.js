@@ -1,4 +1,5 @@
 const subscriptionService = require('./subscription.service');
+const eventEmitter = require('../../events/eventEmitter');
 
 // @desc    Create a subscription
 // @route   POST /api/subscriptions
@@ -13,6 +14,10 @@ const createSubscription = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'parentId is required when creating as admin' });
     }
     const subscription = await subscriptionService.createSubscription(req.body, parentId);
+    
+    // Notify listeners about the new subscription
+    eventEmitter.emit('subscription.created', { subscription, user: req.user });
+
     res.status(201).json({ success: true, data: subscription });
   } catch (error) {
     next(error);

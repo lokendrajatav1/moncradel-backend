@@ -1,4 +1,5 @@
 const supportService = require('./support.service');
+const eventEmitter = require('../../events/eventEmitter');
 
 // @desc    Create a support ticket
 // @route   POST /api/support
@@ -6,6 +7,16 @@ const supportService = require('./support.service');
 const createTicket = async (req, res, next) => {
   try {
     const ticket = await supportService.createTicket(req.user._id, req.body);
+    
+    // Notify listeners about the new support ticket
+    eventEmitter.emit('support.created', { ticket, user: req.user });
+
+    // Emit real-time socket event directly to all connected admins
+    const io = req.app.get('io');
+    if (io) {
+      io.to('admin_room').emit('new_notification');
+    }
+
     res.status(201).json({ success: true, data: ticket });
   } catch (error) {
     next(error);
@@ -32,13 +43,13 @@ const replyToTicket = async (req, res, next) => {
     const { message, status, quotedReplyId } = req.body;
     const sender = req.user.role === 'admin' ? 'admin' : 'user';
     const ticket = await supportService.replyToTicket(req.params.id, sender, message, status, quotedReplyId);
-    
+
     // Broadcast the update to anyone in the ticket's room
     const io = req.app.get('io');
     if (io) {
       io.to(`ticket_${ticket._id}`).emit('ticket_reply', ticket);
     }
-    
+
     res.status(200).json({ success: true, data: ticket });
   } catch (error) {
     next(error);
@@ -52,12 +63,12 @@ const editReply = async (req, res, next) => {
   try {
     const { message } = req.body;
     const ticket = await supportService.editReply(req.params.id, req.params.replyId, message, req.user._id, req.user.role);
-    
+
     const io = req.app.get('io');
     if (io) {
       io.to(`ticket_${ticket._id}`).emit('ticket_reply', ticket);
     }
-    
+
     res.status(200).json({ success: true, data: ticket });
   } catch (error) {
     next(error);
@@ -70,12 +81,31 @@ const editReply = async (req, res, next) => {
 const deleteReply = async (req, res, next) => {
   try {
     const ticket = await supportService.deleteReply(req.params.id, req.params.replyId, req.user._id, req.user.role);
-    
+
     const io = req.app.get('io');
     if (io) {
       io.to(`ticket_${ticket._id}`).emit('ticket_reply', ticket);
     }
-    
+
+    res.status(200).json({ success: true, data: ticket });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark messages as read
+// @route   PUT /api/support/:id/read
+// @access  Private
+const markAsRead = async (req, res, next) => {
+  try {
+    const userRole = req.user.role === 'admin' ? 'admin' : 'user';
+    const ticket = await supportService.markAsRead(req.params.id, userRole);
+
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`ticket_${ticket._id}`).emit('ticket_reply', ticket);
+    }
+
     res.status(200).json({ success: true, data: ticket });
   } catch (error) {
     next(error);
@@ -87,5 +117,6 @@ module.exports = {
   getTickets,
   replyToTicket,
   editReply,
-  deleteReply
+  deleteReply,
+  markAsRead
 };

@@ -58,13 +58,17 @@ const analyticsRoutes = require('./modules/analytics/analytics.route');
 const bannerRoutes = require('./modules/banner/banner.route');
 const couponRoutes = require('./modules/coupon/coupon.route');
 const settingRoutes = require('./modules/setting/setting.route');
+const vaccinationRoutes = require('./modules/vaccination/vaccination.route');
+const vaccinationMasterRoutes = require('./modules/vaccinationMaster/vaccinationMaster.route');
 const auditLogRoutes = require('./modules/auditLog/auditLog.route');
 const cartRoutes = require('./modules/cart/cart.route');
 const addressRoutes = require('./modules/address/address.route');
 const milestoneRoutes = require('./modules/milestone/milestone.route');
 const standardMilestoneRoutes = require('./modules/standardMilestone/standardMilestone.route');
 const walletRoutes = require('./modules/wallet/wallet.route');
-
+const articleRoutes = require('./modules/article/article.routes');
+const newsletterRoutes = require('./modules/newsletter/newsletter.route');
+const activityLogRoutes = require('./modules/activityLog/activityLog.route');
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -100,10 +104,15 @@ app.use('/api/addresses', addressRoutes);
 app.use('/api/milestones', milestoneRoutes);
 app.use('/api/standard-milestones', standardMilestoneRoutes);
 app.use('/api/wallet', walletRoutes);
+app.use('/api/articles', articleRoutes);
+app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/activity-logs', activityLogRoutes);
+app.use('/api/vaccinations', vaccinationRoutes);
+app.use('/api/vaccination-master', vaccinationMasterRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Moncradel API' });
+  res.json({ message: 'Welcome to the moncradle API' });
 });
 
 // Error Handler Middleware (must be after all routes)

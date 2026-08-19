@@ -92,7 +92,7 @@ const authenticateUser = async (email, password) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
   console.log('Password match:', isMatch);
-  
+
   if (!isMatch) {
     throw new Error('Invalid credentials');
   }
@@ -133,7 +133,7 @@ const sendOtp = async (phone, additionalData = {}) => {
     if (user.lastOtpSentAt) {
       const timeSinceLastOtp = Date.now() - user.lastOtpSentAt.getTime();
       const waitTime = 60000; // 60 seconds in milliseconds
-      
+
       if (timeSinceLastOtp < waitTime) {
         const secondsLeft = Math.ceil((waitTime - timeSinceLastOtp) / 1000);
         throw new Error(`Please wait ${secondsLeft} seconds before requesting another OTP`);
@@ -143,13 +143,13 @@ const sendOtp = async (phone, additionalData = {}) => {
 
   // Generate 4 digit OTP
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  
+
   // Set expiration to 10 minutes from now
   const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
   // Update user with OTP and current timestamp for rate limiting
-  await User.findByIdAndUpdate(user._id, { 
-    otp, 
+  await User.findByIdAndUpdate(user._id, {
+    otp,
     otpExpires,
     lastOtpSentAt: new Date()
   });
@@ -157,7 +157,7 @@ const sendOtp = async (phone, additionalData = {}) => {
   // In a real app, send this via SMS (Twilio/Firebase)
   console.log(`[SMS MOCK] OTP for ${phone} is: ${otp}`);
 
-  return { 
+  return {
     message: 'OTP sent successfully',
     otp: otp // Added for testing purposes so you don't have to check logs
   };
@@ -206,14 +206,14 @@ const forgotPassword = async (email) => {
 
   // 1. Generate 4 digit OTP for app verification
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  
+
   // 2. Generate secure token for web link verification
   const resetToken = user.getResetPasswordToken();
 
   // Save both to user document (getResetPasswordToken sets resetPasswordExpire internally)
   user.otp = otp;
   user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
-  
+
   await user.save({ validateBeforeSave: false });
 
   // Create reset url
@@ -223,9 +223,9 @@ const forgotPassword = async (email) => {
   try {
     await sendEmail({
       to: user.email,
-      subject: 'Moncradel - Password Reset Request',
+      subject: 'moncradle - Password Reset Request',
       text: `You requested a password reset.\nOption 1 (App): Enter this OTP: ${otp}\nOption 2 (Web): Click this link: ${resetUrl}`,
-      html: `<h2>Moncradel Password Reset</h2>
+      html: `<h2>moncradle Password Reset</h2>
              <p>You requested a password reset.</p>
              <p><strong>Option 1 (App):</strong> Enter this OTP: <strong>${otp}</strong></p>
              <p><strong>Option 2 (Web):</strong> <a href="${resetUrl}">Click here to reset your password</a></p>`
@@ -240,7 +240,7 @@ const forgotPassword = async (email) => {
     throw new Error('Email could not be sent. Please try again.');
   }
 
-  return { 
+  return {
     message: 'Email sent with OTP and Reset Link',
     otp: otp, // Added for testing
     resetToken: resetToken // Added for testing
@@ -271,7 +271,7 @@ const resetPassword = async ({ token, otp, email, password }) => {
   } else if (otp && email) {
     // Flow 2: App OTP Verification
     user = await User.findOne({ email, otp, otpExpires: { $gt: Date.now() } }).select('+otp +otpExpires');
-    
+
     if (!user) {
       throw new Error('Invalid or expired OTP');
     }
@@ -324,9 +324,9 @@ const sendRegisterOtp = async (email) => {
   try {
     await sendEmail({
       to: email,
-      subject: 'Moncradel - Email Verification OTP',
-      text: `Your One-Time Password (OTP) for Moncradel registration is: ${otp}. It is valid for 10 minutes.`,
-      html: `<h2>Moncradel Verification</h2><p>Your One-Time Password (OTP) for registration is: <strong>${otp}</strong></p><p>It is valid for 10 minutes.</p>`,
+      subject: 'moncradle - Email Verification OTP',
+      text: `Your One-Time Password (OTP) for moncradle registration is: ${otp}. It is valid for 10 minutes.`,
+      html: `<h2>moncradle Verification</h2><p>Your One-Time Password (OTP) for registration is: <strong>${otp}</strong></p><p>It is valid for 10 minutes.</p>`,
     });
   } catch (error) {
     console.error('Error sending email:', error);

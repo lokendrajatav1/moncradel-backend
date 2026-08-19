@@ -9,7 +9,11 @@ const prescriptionSchema = new mongoose.Schema({
   doctorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // Not required when parent uploads their own report
+  },
+  uploadedByParent: {
+    type: Boolean,
+    default: false
   },
   fileUrl: {
     type: String, // Cloudinary URL

@@ -5,12 +5,9 @@ const prescriptionService = require('./prescription.service');
 // @access  Private (Doctor)
 const uploadPrescription = async (req, res, next) => {
   try {
-    if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Only doctors or admins can upload prescriptions' });
-    }
-
     const userId = req.user._id || req.user.id;
-    const prescription = await prescriptionService.uploadPrescription(userId, req.body, req.file);
+    const userRole = req.user.role;
+    const prescription = await prescriptionService.uploadPrescription(userId, req.body, req.file, userRole);
     res.status(201).json({ success: true, data: prescription });
   } catch (error) {
     next(error);

@@ -73,7 +73,7 @@ const payloadDictionary = {
 const createPostmanReq = (pathName, method, roleKey) => {
   const urlPath = pathName.split('/').filter(p => p);
   const pathVars = urlPath.filter(p => p.startsWith(':')).map(p => p.replace(':', ''));
-  
+
   const req = {
     method: method.toUpperCase(),
     header: [],
@@ -84,14 +84,14 @@ const createPostmanReq = (pathName, method, roleKey) => {
       variable: pathVars.map(v => ({ key: v, value: "64f719d3f1a2b3c4d5e6f7a8" }))
     }
   };
-  
+
   if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
     const key = `${method.toUpperCase()} ${pathName}`;
     const roleKeySpecific = `${key}|${roleKey}`;
     const rawBody = payloadDictionary[roleKeySpecific] || payloadDictionary[key] || "{\n  \n}";
     req.body = { mode: "raw", raw: rawBody, options: { raw: { language: "json" } } };
   }
-  
+
   return {
     name: `${method.toUpperCase()} ${pathName}`,
     request: req
@@ -101,7 +101,7 @@ const createPostmanReq = (pathName, method, roleKey) => {
 const createCollection = (name, items) => {
   return {
     info: {
-      name: `Moncradel - ${name}`,
+      name: `moncradle - ${name}`,
       description: `Complete auto-generated collection for ${name}`,
       schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
@@ -120,7 +120,7 @@ const createCollection = (name, items) => {
 // Process Routes
 routes.forEach(({ method, path: pathName }) => {
   if (!pathName || !pathName.startsWith('/api')) return;
-  
+
   for (const [roleKey, roleData] of Object.entries(roleMappings)) {
     if (roleData.prefixes.some(prefix => pathName.startsWith(prefix))) {
       const fullRoute = `${method.toUpperCase()} ${pathName}`;
@@ -135,13 +135,13 @@ routes.forEach(({ method, path: pathName }) => {
         roleData.items.push(folder);
       }
       folder.item.push(createPostmanReq(pathName, method, roleKey));
-      
+
       // Add to MD
       let mdBlock = `### **${method.toUpperCase()}** \`${pathName}\``;
       const key = `${method.toUpperCase()} ${pathName}`;
       const roleKeySpecific = `${key}|${roleKey}`;
       const payload = payloadDictionary[roleKeySpecific] || payloadDictionary[key];
-      
+
       if (payload) {
         mdBlock += `\n**Example Request Body:**\n\`\`\`json\n${payload}\n\`\`\``;
       }
@@ -156,7 +156,7 @@ for (const [roleKey, roleData] of Object.entries(roleMappings)) {
   const colFile = path.join(__dirname, `${roleKey}_complete_postman.json`);
   fs.writeFileSync(colFile, JSON.stringify(createCollection(roleData.name, roleData.items), null, 2));
   console.log(`Generated: ${colFile}`);
-  
+
   // Markdown Guide
   const mdFile = path.join(artifactDir, `${roleKey}_integration_guide.md`);
   const mdContent = `# ${roleData.name} Integration Guide\n\nThis guide contains all the APIs required to build the **${roleData.name}**. \n\n### How to test:\nImport the \`${roleKey}_complete_postman.json\` file from your backend folder into Postman.\n\n### API Details:\n\n${roleData.md.join('\n\n---\n\n')}\n`;

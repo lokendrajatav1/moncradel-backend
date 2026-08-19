@@ -47,6 +47,7 @@ const updateUserProfile = async (req, res) => {
     if (req.body.email) baseUpdates.email = req.body.email;
     if (req.body.phone) baseUpdates.phone = req.body.phone;
     if (req.body.address) baseUpdates.address = req.body.address;
+    if (req.body.fcmToken) baseUpdates.fcmToken = req.body.fcmToken;
 
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'avatars');
@@ -60,6 +61,7 @@ const updateUserProfile = async (req, res) => {
       if (baseUpdates.phone) req.user.phone = baseUpdates.phone;
       if (baseUpdates.avatar) req.user.avatar = baseUpdates.avatar;
       if (baseUpdates.address) req.user.address = baseUpdates.address;
+      if (baseUpdates.fcmToken) req.user.fcmToken = baseUpdates.fcmToken;
     }
 
     // Update specific profile fields
@@ -295,6 +297,71 @@ const createUserByAdmin = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// @desc    Get user's wishlist
+// @route   GET /api/users/wishlist
+// @access  Private
+const getWishlist = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({ success: true, data: user.wishlist || [] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Add item to wishlist
+// @route   POST /api/users/wishlist
+// @access  Private
+const addToWishlist = async (req, res) => {
+  try {
+    const { itemId, itemType } = req.body;
+    if (!itemId || !itemType) {
+      return res.status(400).json({ success: false, message: 'Please provide itemId and itemType' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if item already in wishlist
+    const exists = user.wishlist.find(item => item.itemId.toString() === itemId);
+    if (exists) {
+      return res.status(200).json({ success: true, message: 'Item already in wishlist', data: user.wishlist });
+    }
+
+    user.wishlist.push({ itemType, itemId });
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Added to wishlist', data: user.wishlist });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Remove item from wishlist
+// @route   DELETE /api/users/wishlist/:itemId
+// @access  Private
+const removeFromWishlist = async (req, res) => {
+  try {
+    const { itemId } = req.params;
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    user.wishlist = user.wishlist.filter(item => item.itemId.toString() !== itemId);
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Removed from wishlist', data: user.wishlist });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 module.exports = {
   getUserProfile,
@@ -304,5 +371,8 @@ module.exports = {
   deleteUser,
   updateUser,
   verifyUser,
-  createUserByAdmin
+  createUserByAdmin,
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist
 };

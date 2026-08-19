@@ -7,7 +7,7 @@ const routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'));
 const swagger = {
   openapi: "3.0.0",
   info: {
-    title: 'Moncradel Complete API',
+    title: 'moncradle Complete API',
     description: 'Auto-generated comprehensive Swagger API documentation',
     version: "1.0.0"
   },
@@ -26,21 +26,21 @@ const swagger = {
       }
     }
   },
-  security: [ { bearerAuth: [] } ],
+  security: [{ bearerAuth: [] }],
   paths: {}
 };
 
 routes.forEach(({ method, path: pathName }) => {
   if (!pathName || !pathName.startsWith('/api')) return;
-  
+
   const swaggerPath = pathName.replace('/api', '').replace(/:([a-zA-Z0-9_]+)/g, '{$1}');
-  
+
   if (!swagger.paths[swaggerPath]) {
     swagger.paths[swaggerPath] = {};
   }
-  
+
   const pathVars = swaggerPath.match(/{([^}]+)}/g) || [];
-  
+
   const endpointDef = {
     summary: `${method.toUpperCase()} ${swaggerPath}`,
     tags: [swaggerPath.split('/')[1] || 'default'],
@@ -48,7 +48,7 @@ routes.forEach(({ method, path: pathName }) => {
       200: { description: "Success" }
     }
   };
-  
+
   if (pathVars.length > 0) {
     endpointDef.parameters = pathVars.map(v => ({
       name: v.replace(/[{}]/g, ''),
@@ -57,7 +57,7 @@ routes.forEach(({ method, path: pathName }) => {
       schema: { type: "string" }
     }));
   }
-  
+
   if (['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
     endpointDef.requestBody = {
       required: true,
@@ -70,7 +70,7 @@ routes.forEach(({ method, path: pathName }) => {
       }
     };
   }
-  
+
   swagger.paths[swaggerPath][method.toLowerCase()] = endpointDef;
 });
 

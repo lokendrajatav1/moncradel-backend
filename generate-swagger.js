@@ -3,9 +3,9 @@ const fs = require('fs');
 const swagger = {
   openapi: "3.0.0",
   info: {
-    title: "Moncradel API",
+    title: "moncradle API",
     version: "1.0.0",
-    description: "API Documentation for Moncradel PWAs (Doctor, Kitchen, Delivery, Parent)"
+    description: "API Documentation for moncradle PWAs (Doctor, Kitchen, Delivery, Parent)"
   },
   servers: [
     {
@@ -54,9 +54,9 @@ const swagger = {
       post: { tags: ["Appointments"], summary: "Book an appointment", responses: { 200: { description: "Success" } } }
     },
     "/appointments/{id}/status": {
-      patch: { 
-        tags: ["Appointments"], 
-        summary: "Update appointment status", 
+      patch: {
+        tags: ["Appointments"],
+        summary: "Update appointment status",
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
         responses: { 200: { description: "Success" } }
       }
