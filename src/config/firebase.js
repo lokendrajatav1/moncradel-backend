@@ -39,7 +39,20 @@ const sendPushNotification = async (fcmToken, title, body, data = {}) => {
     const response = await getMessaging().send(payload);
     console.log('Successfully sent push notification:', response);
   } catch (error) {
-    console.error('Error sending push notification:', error);
+    if (error.code === 'messaging/registration-token-not-registered' || error.code === 'messaging/invalid-registration-token') {
+      console.log(`[Firebase] Device unregistered for token: ${fcmToken.substring(0, 10)}... Removing from DB.`);
+      try {
+        const User = require('../modules/user/user.model');
+        await User.updateMany(
+          { fcmToken: fcmToken },
+          { $unset: { fcmToken: 1 } }
+        );
+      } catch (dbError) {
+        console.error('[Firebase] Failed to remove unregistered token from DB:', dbError.message);
+      }
+    } else {
+      console.error('Error sending push notification:', error);
+    }
   }
 };
 

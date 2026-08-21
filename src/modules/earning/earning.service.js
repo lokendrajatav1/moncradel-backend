@@ -9,6 +9,8 @@ const getEarnings = async (userRole, userId, filters = {}) => {
   // Non-admin users can only see their own earnings
   if (userRole !== 'admin' && userRole !== 'superadmin') {
     query.staffId = userId;
+  } else if (filters.staffId) {
+    query.staffId = filters.staffId;
   }
 
   // Filter by role (driver / doctor / kitchen)

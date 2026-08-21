@@ -1,4 +1,5 @@
 const Meal = require('./meal.model');
+const Baby = require('../baby/baby.model');
 const { uploadToCloudinary } = require('../../utils/cloudinary');
 
 /**
@@ -99,16 +100,60 @@ const getAllMeals = async (query = {}) => {
   const meals = await Meal.find(filters)
     .sort(sortObj)
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .lean();
+
+  const mealIds = meals.map(m => m._id);
+  const mongooseObj = require('mongoose');
+  // Need to make sure Review is loaded. It's required below as const Review = require('../review/review.model');
+  // But wait, Review is required at line 109. Let me move the requirement up or just use mongoose.model('Review')
+  const ReviewModel = mongooseObj.models.Review || require('../review/review.model');
+  
+  const reviewsInfo = await ReviewModel.aggregate([
+    { $match: { mealId: { $in: mealIds }, targetType: 'meal' } },
+    { $group: { _id: '$mealId', averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  const reviewMap = {};
+  for (const info of reviewsInfo) {
+    reviewMap[info._id.toString()] = info;
+  }
+
+  for (const meal of meals) {
+    const info = reviewMap[meal._id.toString()];
+    if (info) {
+      meal.rating = Math.round(info.averageRating * 10) / 10;
+      meal.reviewsCount = info.reviewsCount;
+    } else {
+      meal.rating = 0;
+      meal.reviewsCount = 0;
+    }
+  }
 
   return { meals, count, page, pages: Math.ceil(count / limit) };
 };
+
+const mongoose = require('mongoose');
+const Review = require('../review/review.model');
 
 /**
  * Get meal by ID
  */
 const getMealById = async (id) => {
-  return await Meal.findById(id);
+  const meal = await Meal.findById(id).lean();
+  if (!meal) return null;
+
+  const reviewsInfo = await Review.aggregate([
+    { $match: { mealId: new mongoose.Types.ObjectId(id), targetType: 'meal' } },
+    { $group: { _id: null, averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  if (reviewsInfo.length > 0) {
+    meal.rating = Math.round(reviewsInfo[0].averageRating * 10) / 10;
+    meal.reviewsCount = reviewsInfo[0].reviewsCount;
+  }
+
+  return meal;
 };
 
 /**
@@ -183,11 +228,121 @@ const getMealFilters = async () => {
   };
 };
 
+/**
+ * Get recommended meals for a baby based on allergies, age, and health symptoms
+ */
+const getRecommendedMeals = async (babyId) => {
+  const baby = await Baby.findById(babyId);
+  if (!baby) {
+    throw new Error('Baby not found');
+  }
+
+  // Get all active meals
+  const meals = await Meal.find({ isActive: true }).lean();
+  const recommendations = [];
+
+  // Helper for age matching
+  const isAgeMatch = (ageInMonths, ageGroup) => {
+    if (!ageInMonths) return false;
+    if (ageGroup === '0-6 months' && ageInMonths <= 6) return true;
+    if (ageGroup === '6-12 months' && ageInMonths > 6 && ageInMonths <= 12) return true;
+    if (ageGroup === '1-3 years' && ageInMonths > 12 && ageInMonths <= 36) return true;
+    if (ageGroup === '3+ years' && ageInMonths > 36) return true;
+    return false;
+  };
+
+  // Helper to check for intersection
+  const hasIntersection = (arr1, arr2) => {
+    if (!arr1 || !arr2 || arr1.length === 0 || arr2.length === 0) return false;
+    const lowerArr1 = arr1.map(item => item.toLowerCase());
+    return arr2.some(item => lowerArr1.includes(item.toLowerCase()));
+  };
+
+  for (const meal of meals) {
+    let score = 0;
+
+    // 1. Filter out allergens
+    if (hasIntersection(meal.allergens, baby.allergies)) {
+      continue; // Skip this meal entirely (0 Score)
+    }
+
+    // 2. Age Matching (+10 points)
+    if (isAgeMatch(baby.ageInMonths, meal.suitableForAgeGroup)) {
+      score += 10;
+    }
+
+    // 3. Health Triggers (+5 points per matching symptom/tag correlation)
+    if (baby.currentSymptoms && meal.tags) {
+      const lowerSymptoms = baby.currentSymptoms.map(s => s.toLowerCase());
+      const lowerTags = meal.tags.map(t => t.toLowerCase());
+
+      // Example Triggers:
+      if (lowerSymptoms.includes('cold') || lowerSymptoms.includes('fever')) {
+        if (lowerTags.includes('immunity') || lowerTags.includes('warm') || lowerTags.includes('soup')) {
+          score += 5;
+        }
+      }
+      
+      if (lowerSymptoms.includes('teething')) {
+        if (lowerTags.includes('soft') || lowerTags.includes('cold') || lowerTags.includes('puree')) {
+          score += 5;
+        }
+      }
+
+      if (lowerSymptoms.includes('constipation')) {
+        if (lowerTags.includes('high fiber') || lowerTags.includes('constipation relief')) {
+          score += 5;
+        }
+      }
+    }
+
+    // Only recommend if there is some relevance (score > 0)
+    // Actually, we can just sort all safe meals by score
+    recommendations.push({
+      meal,
+      score
+    });
+  }
+
+  // Sort descending by score
+  recommendations.sort((a, b) => b.score - a.score);
+
+  // Return Top 5 meals
+  const topMeals = recommendations.slice(0, 5).map(r => r.meal);
+
+  const mealIds = topMeals.map(m => m._id);
+  const mongooseObj = require('mongoose');
+  const ReviewModel = mongooseObj.models.Review || require('../review/review.model');
+  const reviewsInfo = await ReviewModel.aggregate([
+    { $match: { mealId: { $in: mealIds }, targetType: 'meal' } },
+    { $group: { _id: '$mealId', averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  const reviewMap = {};
+  for (const info of reviewsInfo) {
+    reviewMap[info._id.toString()] = info;
+  }
+
+  for (const meal of topMeals) {
+    const info = reviewMap[meal._id.toString()];
+    if (info) {
+      meal.rating = Math.round(info.averageRating * 10) / 10;
+      meal.reviewsCount = info.reviewsCount;
+    } else {
+      meal.rating = 0;
+      meal.reviewsCount = 0;
+    }
+  }
+
+  return topMeals;
+};
+
 module.exports = {
   addMeal,
   getAllMeals,
   getMealById,
   updateMeal,
   deleteMeal,
-  getMealFilters
+  getMealFilters,
+  getRecommendedMeals
 };
