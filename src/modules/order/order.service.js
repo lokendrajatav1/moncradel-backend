@@ -69,8 +69,22 @@ const updateOrderStatus = async (orderId, status, updatedFields = {}) => {
   );
 };
 
+/**
+ * Get single order by ID
+ */
+const getOrderById = async (orderId) => {
+  return await Order.findById(orderId)
+    .populate('parentId', 'name email phone')
+    .populate('babyId', 'name ageInMonths allergies')
+    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice')
+    .populate('items.productId', 'name price imageUrl discountedPrice')
+    .populate('kitchenId', 'name phone address')
+    .populate('deliveryId', 'name phone');
+};
+
 module.exports = {
   createOrder,
   getOrders,
+  getOrderById,
   updateOrderStatus
 };
