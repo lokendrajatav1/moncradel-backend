@@ -41,13 +41,17 @@ const getUserProfile = async (req, res) => {
 // @access  Private
 const updateUserProfile = async (req, res) => {
   try {
-    // Update base user fields
+    // Allowed base updates
     const baseUpdates = {};
     if (req.body.name) baseUpdates.name = req.body.name;
-    if (req.body.email) baseUpdates.email = req.body.email;
-    if (req.body.phone) baseUpdates.phone = req.body.phone;
+    if (req.body.email !== undefined) baseUpdates.email = req.body.email;
+    // Phone is not allowed to be updated here for security reasons
     if (req.body.address) baseUpdates.address = req.body.address;
     if (req.body.fcmToken) baseUpdates.fcmToken = req.body.fcmToken;
+    if (req.body.gender) baseUpdates.gender = req.body.gender;
+    if (req.body.dateOfBirth) baseUpdates.dateOfBirth = req.body.dateOfBirth;
+    if (req.body.preferredLanguage) baseUpdates.preferredLanguage = req.body.preferredLanguage;
+    if (req.body.relationToChild) baseUpdates.relationToChild = req.body.relationToChild;
 
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'avatars');
@@ -62,6 +66,10 @@ const updateUserProfile = async (req, res) => {
       if (baseUpdates.avatar) req.user.avatar = baseUpdates.avatar;
       if (baseUpdates.address) req.user.address = baseUpdates.address;
       if (baseUpdates.fcmToken) req.user.fcmToken = baseUpdates.fcmToken;
+      if (baseUpdates.gender) req.user.gender = baseUpdates.gender;
+      if (baseUpdates.dateOfBirth) req.user.dateOfBirth = baseUpdates.dateOfBirth;
+      if (baseUpdates.preferredLanguage) req.user.preferredLanguage = baseUpdates.preferredLanguage;
+      if (baseUpdates.relationToChild) req.user.relationToChild = baseUpdates.relationToChild;
     }
 
     // Update specific profile fields

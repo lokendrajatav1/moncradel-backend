@@ -60,7 +60,7 @@ const couponRoutes = require('./modules/coupon/coupon.route');
 const settingRoutes = require('./modules/setting/setting.route');
 const vaccinationRoutes = require('./modules/vaccination/vaccination.route');
 const vaccinationMasterRoutes = require('./modules/vaccinationMaster/vaccinationMaster.route');
-const auditLogRoutes = require('./modules/auditLog/auditLog.route');
+
 const cartRoutes = require('./modules/cart/cart.route');
 const addressRoutes = require('./modules/address/address.route');
 const milestoneRoutes = require('./modules/milestone/milestone.route');
@@ -99,7 +99,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/settings', settingRoutes);
-app.use('/api/audit-logs', auditLogRoutes);
+
 app.use('/api/cart', cartRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/milestones', milestoneRoutes);
