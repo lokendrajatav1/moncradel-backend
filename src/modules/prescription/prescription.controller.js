@@ -31,7 +31,11 @@ const getPrescriptions = async (req, res, next) => {
 // @access  Private (Admin)
 const getAllPrescriptions = async (req, res, next) => {
   try {
-    const prescriptions = await prescriptionService.getAllPrescriptions();
+    let filter = {};
+    if (req.user.role === 'doctor') {
+      filter.doctorId = req.user._id || req.user.id;
+    }
+    const prescriptions = await prescriptionService.getAllPrescriptions(filter);
     res.status(200).json({ success: true, count: prescriptions.length, data: prescriptions });
   } catch (error) {
     next(error);

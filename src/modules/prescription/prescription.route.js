@@ -8,7 +8,7 @@ const { uploadPrescriptionSchema } = require('./prescription.validation');
 
 router.route('/')
   .post(protect, authorize('admin', 'doctor', 'parent'), upload.single('file'), validate(uploadPrescriptionSchema), uploadPrescription)
-  .get(protect, authorize('admin'), getAllPrescriptions);
+  .get(protect, authorize('admin', 'doctor'), getAllPrescriptions);
 
 router.route('/baby/:babyId')
   .get(protect, getPrescriptions);
