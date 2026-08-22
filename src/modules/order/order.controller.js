@@ -3,6 +3,7 @@ const { uploadToCloudinary } = require('../../utils/cloudinary');
 const Earning = require('../earning/earning.model'); // We will create this
 const Order = require('./order.model');
 const eventEmitter = require('../../events/eventEmitter');
+const { addNotificationJob } = require('../../queues/notification.queue');
 
 // @desc    Create a new order
 // @route   POST /api/orders
@@ -158,7 +159,24 @@ const updateOrderStatus = async (req, res) => {
     // Allow admin to explicitly assign kitchen and delivery
     if (req.user && req.user.role === 'admin') {
       if (kitchenId) updatedFields.kitchenId = kitchenId;
-      if (deliveryId) updatedFields.deliveryId = deliveryId;
+      if (deliveryId) {
+        updatedFields.deliveryId = deliveryId;
+        
+        // Notify the delivery boy about the assignment if it's new
+        const currentOrder = await Order.findById(req.params.id);
+        if (!currentOrder.deliveryId || currentOrder.deliveryId.toString() !== deliveryId.toString()) {
+          try {
+            await addNotificationJob({
+              userId: deliveryId,
+              title: 'New Order Assigned',
+              message: `You have been assigned to deliver order #${req.params.id.substring(0, 6)}`,
+              orderId: req.params.id
+            });
+          } catch (err) {
+            console.error("Failed to queue assignment notification", err);
+          }
+        }
+      }
     }
 
     // If kitchen accepts the order, assign kitchenId
@@ -200,6 +218,20 @@ const updateOrderStatus = async (req, res) => {
 
     const order = await orderService.updateOrderStatus(req.params.id, status, updatedFields);
 
+    // Notify delivery partner when order is ready to be picked up
+    if (status === 'ready' && order.deliveryId) {
+      try {
+        await addNotificationJob({
+          userId: order.deliveryId,
+          title: 'Order Ready for Pickup',
+          message: `Order #${order._id.toString().substring(0, 6)} is ready at the kitchen. Please pick it up.`,
+          orderId: order._id.toString()
+        });
+      } catch (err) {
+        console.error("Failed to queue order ready notification", err);
+      }
+    }
+
     // Broadcast status update to the specific order room
     const io = req.app.get('io');
     if (io) {
@@ -212,8 +244,29 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+// @desc    Get order by ID
+// @route   GET /api/orders/:id
+// @access  Private
+const getOrderById = async (req, res) => {
+  try {
+    const order = await orderService.getOrderById(req.params.id);
+    
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Role-based visibility check could be added here if needed,
+    // but for now we'll just return the order to any authenticated user who has the ID.
+    
+    res.status(200).json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createOrder,
   getOrders,
+  getOrderById,
   updateOrderStatus
 };
