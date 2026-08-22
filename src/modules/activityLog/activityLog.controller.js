@@ -43,11 +43,19 @@ exports.logActivity = async (req, res, next) => {
 exports.getActivityLogs = async (req, res, next) => {
   try {
     const { babyId } = req.params;
-    const { type, limit = 50 } = req.query;
+    const { type, limit = 50, startDate, endDate } = req.query;
 
     let query = { babyId };
     if (type) {
       query.type = type;
+    }
+
+    // Dynamic date-based filtering based on exact ISO bounds from frontend
+    if (startDate && endDate) {
+      query.startTime = {
+        $gte: new Date(startDate),
+        $lt: new Date(endDate)
+      };
     }
 
     const logs = await ActivityLog.find(query).sort({ startTime: -1 }).limit(parseInt(limit));

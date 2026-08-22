@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../../middleware/auth');
 
-const { addMeal, getMeals, getMealById, updateMeal, deleteMeal, getMealFilters } = require('./meal.controller');
+const { addMeal, getMeals, getMealById, updateMeal, deleteMeal, getMealFilters, getMealRecommendations } = require('./meal.controller');
 const validate = require('../../middleware/validate');
 const { addMealSchema } = require('./meal.validation');
 const upload = require('../../middleware/upload');
@@ -13,6 +13,7 @@ router.route('/')
   .get(getMeals);
 
 router.get('/filters', getMealFilters);
+router.get('/recommendations/:babyId', protect, getMealRecommendations);
 
 router.route('/:id')
   .get(getMealById)

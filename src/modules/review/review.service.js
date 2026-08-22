@@ -15,7 +15,7 @@ const addReview = async (parentId, reviewData) => {
     if (order.parentId.toString() !== parentId.toString()) throw new Error('Not authorized to review this order');
     if (order.status !== 'delivered') throw new Error('Can only review delivered orders');
 
-    const existing = await Review.findOne({ parentId, orderId, targetType: 'meal' });
+    const existing = await Review.findOne({ parentId, orderId, targetType: 'meal', mealId });
     if (existing) throw Object.assign(new Error('Already reviewed'), { code: 11000 });
 
     return await Review.create({ parentId, targetType, mealId, orderId, rating, comment });
@@ -28,7 +28,7 @@ const addReview = async (parentId, reviewData) => {
     if (order.parentId.toString() !== parentId.toString()) throw new Error('Not authorized to review this order');
     if (order.status !== 'delivered') throw new Error('Can only review delivered orders');
 
-    const existing = await Review.findOne({ parentId, orderId, targetType: 'product' });
+    const existing = await Review.findOne({ parentId, orderId, targetType: 'product', productId });
     if (existing) throw Object.assign(new Error('Already reviewed'), { code: 11000 });
 
     return await Review.create({ parentId, targetType, productId, orderId, rating, comment });
@@ -104,7 +104,7 @@ const getDeliveryPartnerReviews = async (deliveryPartnerId) => {
  */
 const hasReviewed = async (parentId, query) => {
   const review = await Review.findOne({ parentId, ...query });
-  return !!review;
+  return review;
 };
 
 /**
@@ -117,6 +117,16 @@ const getAllReviews = async (query = {}) => {
 
   const matchQuery = {};
   if (query.targetType) matchQuery.targetType = query.targetType;
+  if (query.targetId) {
+    const mongoose = require('mongoose');
+    const tid = new mongoose.Types.ObjectId(query.targetId);
+    matchQuery.$or = [
+      { doctorId: tid },
+      { deliveryPartnerId: tid },
+      { mealId: tid },
+      { productId: tid }
+    ];
+  }
   if (query.rating && query.rating !== 'All Ratings') {
     if (query.rating === '1-3 Stars (Low)') {
       matchQuery.rating = { $lte: 3 };

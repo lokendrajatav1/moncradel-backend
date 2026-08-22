@@ -83,6 +83,14 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  couponCode: {
+    type: String,
+    default: ''
+  },
+  discountAmount: {
+    type: Number,
+    default: 0
+  },
   isOtpRequired: {
     type: Boolean,
     default: false

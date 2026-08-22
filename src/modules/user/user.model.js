@@ -65,6 +65,21 @@ const userSchema = new mongoose.Schema(
     fcmToken: {
       type: String
     },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say']
+    },
+    dateOfBirth: {
+      type: Date
+    },
+    preferredLanguage: {
+      type: String,
+      default: 'English'
+    },
+    relationToChild: {
+      type: String,
+      enum: ['Father', 'Mother', 'Guardian', 'Grandparent', 'Other']
+    },
     wishlist: [
       {
         itemType: {

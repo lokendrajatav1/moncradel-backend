@@ -57,6 +57,8 @@ const reviewSchema = new mongoose.Schema({
 // One review per doctor appointment per parent
 reviewSchema.index({ parentId: 1, appointmentId: 1 }, { unique: true, sparse: true });
 // One delivery review per order per parent
-reviewSchema.index({ parentId: 1, orderId: 1, targetType: 1 }, { unique: true, sparse: true });
+reviewSchema.index({ parentId: 1, orderId: 1, targetType: 1, deliveryPartnerId: 1 }, { unique: true, sparse: true });
+reviewSchema.index({ parentId: 1, orderId: 1, targetType: 1, mealId: 1 }, { unique: true, sparse: true });
+reviewSchema.index({ parentId: 1, orderId: 1, targetType: 1, productId: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('Review', reviewSchema);

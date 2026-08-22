@@ -17,8 +17,13 @@ const addGrowthRecord = async (userId, growthData) => {
     recordedDate: recordedDate ? new Date(recordedDate) : Date.now()
   });
 
-  // Optionally update the Baby's current weight based on the latest record
-  await Baby.findByIdAndUpdate(babyId, { weight: weight });
+  const updateData = {};
+  if (weight !== undefined) updateData.weight = weight;
+  if (height !== undefined) updateData.height = height;
+
+  if (Object.keys(updateData).length > 0) {
+    await Baby.findByIdAndUpdate(babyId, updateData);
+  }
 
   return record;
 };
@@ -45,9 +50,12 @@ const updateGrowthRecord = async (id, growthData) => {
     throw new Error('Growth record not found');
   }
 
-  // Optionally update Baby's weight if this is the latest record, but for simplicity we skip here
-  if (growthData.weight) {
-    await Baby.findByIdAndUpdate(record.babyId, { weight: growthData.weight });
+  const updateData = {};
+  if (growthData.weight !== undefined) updateData.weight = growthData.weight;
+  if (growthData.height !== undefined) updateData.height = growthData.height;
+
+  if (Object.keys(updateData).length > 0) {
+    await Baby.findByIdAndUpdate(record.babyId, updateData);
   }
 
   return record;

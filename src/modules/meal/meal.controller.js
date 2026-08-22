@@ -8,6 +8,8 @@ const addMeal = async (req, res) => {
     const mealData = {
       ...req.body,
       ingredients: typeof req.body.ingredients === 'string' ? JSON.parse(req.body.ingredients) : req.body.ingredients,
+      tags: typeof req.body.tags === 'string' ? JSON.parse(req.body.tags) : req.body.tags,
+      allergens: typeof req.body.allergens === 'string' ? JSON.parse(req.body.allergens) : req.body.allergens,
       price: Number(req.body.price),
       discountedPrice: req.body.discountedPrice ? Number(req.body.discountedPrice) : 0
     };
@@ -70,6 +72,8 @@ const updateMeal = async (req, res) => {
     const mealData = {
       ...req.body,
       ingredients: typeof req.body.ingredients === 'string' ? JSON.parse(req.body.ingredients) : req.body.ingredients,
+      tags: typeof req.body.tags === 'string' ? JSON.parse(req.body.tags) : req.body.tags,
+      allergens: typeof req.body.allergens === 'string' ? JSON.parse(req.body.allergens) : req.body.allergens,
       price: req.body.price ? Number(req.body.price) : undefined,
       discountedPrice: req.body.discountedPrice !== undefined ? Number(req.body.discountedPrice) : undefined
     };
@@ -118,6 +122,17 @@ const getMealFilters = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// @desc    Get meal recommendations for a baby
+// @route   GET /api/meals/recommendations/:babyId
+// @access  Private
+const getMealRecommendations = async (req, res) => {
+  try {
+    const recommendations = await mealService.getRecommendedMeals(req.params.babyId);
+    res.status(200).json({ success: true, data: recommendations });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 module.exports = {
   addMeal,
@@ -125,5 +140,6 @@ module.exports = {
   getMealFilters,
   getMealById,
   updateMeal,
-  deleteMeal
+  deleteMeal,
+  getMealRecommendations
 };
