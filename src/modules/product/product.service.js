@@ -75,17 +75,54 @@ const getAllProducts = async (queryString = {}) => {
   const countQuery = new APIFeatures(Product.find(filter), queryString).filter();
   const totalCount = await countQuery.query.countDocuments();
   
-  const data = await features.query;
+  const data = await features.query.lean();
   
+  // Fetch ratings for these paginated products
+  const productIds = data.map(p => p._id);
+  const reviewsInfo = await Review.aggregate([
+    { $match: { productId: { $in: productIds }, targetType: 'product' } },
+    { $group: { _id: '$productId', averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  const reviewMap = {};
+  for (const info of reviewsInfo) {
+    reviewMap[info._id.toString()] = info;
+  }
+
+  for (const product of data) {
+    const info = reviewMap[product._id.toString()];
+    if (info) {
+      product.rating = Math.round(info.averageRating * 10) / 10;
+      product.reviewsCount = info.reviewsCount;
+    } else {
+      product.rating = 0;
+      product.reviewsCount = 0;
+    }
+  }
+
   return { data, totalCount };
 };
+
+const mongoose = require('mongoose');
+const Review = require('../review/review.model');
 
 /**
  * Get a single product by ID
  */
 const getProductById = async (id) => {
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).lean();
   if (!product) throw new Error('Product not found');
+
+  const reviewsInfo = await Review.aggregate([
+    { $match: { productId: new mongoose.Types.ObjectId(id), targetType: 'product' } },
+    { $group: { _id: null, averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  if (reviewsInfo.length > 0) {
+    product.rating = Math.round(reviewsInfo[0].averageRating * 10) / 10;
+    product.reviewsCount = reviewsInfo[0].reviewsCount;
+  }
+
   return product;
 };
 

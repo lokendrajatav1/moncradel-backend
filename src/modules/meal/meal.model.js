@@ -28,6 +28,14 @@ const mealSchema = new mongoose.Schema({
     carbs: { type: Number },   // in grams
     fat: { type: Number }      // in grams
   },
+  tags: {
+    type: [String],
+    default: []
+  },
+  allergens: {
+    type: [String],
+    default: []
+  },
   imageUrl: {
     type: String,
     default: ''
