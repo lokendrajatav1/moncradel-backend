@@ -58,7 +58,7 @@ const createOrder = async (orderData, parentId) => {
 const getOrders = async (filters = {}, queryString = {}) => {
   const features = new APIFeatures(Order.find(filters), queryString)
     .filter();
-    
+
   // Clone query to get total count before sorting and paginating
   const countQuery = features.query.clone();
   const totalCount = await countQuery.countDocuments();

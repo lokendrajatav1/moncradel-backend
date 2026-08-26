@@ -188,6 +188,14 @@ const updateOrderStatus = async (req, res) => {
       updatedFields.deliveryId = req.user._id;
     }
 
+    // Packaging Proof of Kitchen logic
+    if (req.user && status === 'ready' && (req.user.role === 'kitchen' || req.user.role === 'kitchen_staff' || req.user.role === 'admin')) {
+      if (req.file) {
+        const uploadResult = await uploadToCloudinary(req.file.buffer, 'proofs');
+        updatedFields.packagingProofImageUrl = uploadResult.secure_url;
+      }
+    }
+
     // Proof of delivery logic
     if (req.user && status === 'delivered' && req.user.role === 'delivery') {
       const orderToDeliver = await Order.findById(req.params.id);

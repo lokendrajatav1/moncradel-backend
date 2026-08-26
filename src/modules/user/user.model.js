@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'delivery', 'doctor', 'kitchen', 'parent'],
+      enum: ['admin', 'delivery', 'doctor', 'kitchen', 'parent', 'kitchen_staff'],
       default: 'parent'
     },
     // Optional fields that might be specific to certain roles, but useful globally
@@ -92,7 +92,8 @@ const userSchema = new mongoose.Schema(
           required: true
         }
       }
-    ]
+    ],
+
   },
   {
     timestamps: true

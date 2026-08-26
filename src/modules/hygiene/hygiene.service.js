@@ -4,7 +4,7 @@ const { uploadToCloudinary } = require('../../utils/cloudinary');
 /**
  * Log a new hygiene task
  */
-const logHygieneTask = async (kitchenId, taskData, file) => {
+const logHygieneTask = async (kitchenId, taskData, file, user) => {
   const { taskName, date, status } = taskData;
   let photoUrl = '';
 
@@ -13,12 +13,16 @@ const logHygieneTask = async (kitchenId, taskData, file) => {
     photoUrl = uploadResult.secure_url;
   }
 
+  const isCompleted = status === 'completed' || !!photoUrl;
+
   const log = await Hygiene.create({
     kitchenId,
     taskName,
     date,
     status: status || 'completed',
-    photoUrl
+    photoUrl,
+    completedBy: isCompleted && user ? user.name : '',
+    completedById: isCompleted && user ? (user._id || user.id) : null
   });
 
   return log;
@@ -93,6 +97,7 @@ const getHygieneLogs = async (query = {}) => {
       date: 1,
       status: 1,
       photoUrl: 1,
+      completedBy: 1,
       'kitchenId._id': 1,
       'kitchenId.name': 1
     }
@@ -114,11 +119,21 @@ const getHygieneLogs = async (query = {}) => {
 /**
  * Update a hygiene task
  */
-const updateHygieneTask = async (id, updateData, file) => {
+const updateHygieneTask = async (id, updateData, file, user) => {
   const payload = { ...updateData };
   if (file) {
     const uploadResult = await uploadToCloudinary(file.buffer, 'hygiene');
     payload.photoUrl = uploadResult.secure_url;
+  }
+  
+  if (payload.status === 'completed' || payload.photoUrl) {
+     if (user) {
+        payload.completedBy = user.name;
+        payload.completedById = user._id || user.id;
+     }
+  } else if (payload.status === 'pending') {
+     payload.completedBy = '';
+     payload.completedById = null;
   }
 
   const log = await Hygiene.findByIdAndUpdate(id, payload, { new: true });
