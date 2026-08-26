@@ -72,6 +72,7 @@ const activityLogRoutes = require('./modules/activityLog/activityLog.route');
 const staffRoutes = require('./modules/staff/staff.route');
 const attendanceRoutes = require('./modules/attendance/attendance.route');
 const faqRoutes = require('./modules/faq/faq.route');
+const withdrawalRoutes = require('./modules/withdrawal/withdrawal.route');
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -115,6 +116,7 @@ app.use('/api/vaccination-master', vaccinationMasterRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/faqs', faqRoutes);
+app.use('/api/withdrawals', withdrawalRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

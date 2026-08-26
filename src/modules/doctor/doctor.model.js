@@ -11,6 +11,10 @@ const doctorSchema = new mongoose.Schema(
     specialization: {
       type: String
     },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say']
+    },
     experienceYears: {
       type: Number
     },

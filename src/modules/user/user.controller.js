@@ -58,6 +58,12 @@ const updateUserProfile = async (req, res) => {
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'avatars');
       baseUpdates.avatar = result.secure_url;
+      req.body.avatar = result.secure_url;
+    } else if (req.user.role === 'doctor' && req.body.avatar && req.body.avatar.startsWith('data:image')) {
+      const cloudinary = require('../../config/cloudinary');
+      const result = await cloudinary.uploader.upload(req.body.avatar, { folder: 'avatars' });
+      baseUpdates.avatar = result.secure_url;
+      req.body.avatar = result.secure_url;
     }
 
     if (Object.keys(baseUpdates).length > 0) {

@@ -61,8 +61,8 @@ const getPrescriptions = async (babyId) => {
   });
 };
 
-const getAllPrescriptions = async () => {
-  const prescriptions = await Prescription.find()
+const getAllPrescriptions = async (filter = {}) => {
+  const prescriptions = await Prescription.find(filter)
     .populate({
       path: 'babyId',
       select: 'name parentId',

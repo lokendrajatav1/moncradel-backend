@@ -2,6 +2,8 @@ const Appointment = require('./appointment.model');
 const User = require('../user/user.model');
 const Baby = require('../baby/baby.model');
 const APIFeatures = require('../../utils/apiFeatures');
+const Doctor = require('../doctor/doctor.model');
+const Earning = require('../earning/earning.model');
 
 /**
  * Create a new appointment
@@ -35,21 +37,21 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
   // Handle Search across Parent, Doctor, Baby names
   if (queryString.search) {
     const searchRegex = new RegExp(queryString.search, 'i');
-    
+
     // Find matching Users (Parents or Doctors)
     const matchingUsers = await User.find({ name: searchRegex }).select('_id');
     const userIds = matchingUsers.map(u => u._id);
-    
+
     // Find matching Babies
     const matchingBabies = await Baby.find({ name: searchRegex }).select('_id');
     const babyIds = matchingBabies.map(b => b._id);
-    
+
     filters.$or = [
       { parentId: { $in: userIds } },
       { doctorId: { $in: userIds } },
       { babyId: { $in: babyIds } }
     ];
-    
+
     // Remove search from queryString so APIFeatures doesn't try to use it directly
     delete queryString.search;
   }
@@ -70,7 +72,7 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
   const Doctor = require('../doctor/doctor.model');
   const doctorUserIds = rawData.map(app => app.doctorId?._id).filter(Boolean);
   const doctors = await Doctor.find({ user: { $in: doctorUserIds } });
-  
+
   const doctorMap = {};
   doctors.forEach(doc => {
     doctorMap[doc.user.toString()] = doc;
@@ -97,7 +99,7 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
 const updateAppointmentStatus = async (appointmentId, statusData) => {
   const { status, meetingLink, cancellationReason } = statusData;
   const updatePayload = { status, meetingLink };
-  
+
   if (status === 'cancelled') {
     updatePayload.cancelledAt = Date.now();
     if (cancellationReason) {
@@ -114,6 +116,25 @@ const updateAppointmentStatus = async (appointmentId, statusData) => {
   );
 
   if (!appointment) throw new Error('Appointment not found');
+
+  // Handle earning generation when completed
+  if (status === 'completed') {
+    const existingEarning = await Earning.findOne({ appointmentId });
+    if (!existingEarning) {
+      const doctor = await Doctor.findOne({ user: appointment.doctorId });
+      if (doctor && doctor.consultationFee) {
+        await Earning.create({
+          staffId: appointment.doctorId,
+          staffRole: 'doctor',
+          appointmentId: appointment._id,
+          amount: doctor.consultationFee,
+          status: 'pending',
+          notes: 'Consultation fee for completed appointment'
+        });
+      }
+    }
+  }
+
   return appointment;
 };
 
@@ -133,6 +154,25 @@ const updateAppointment = async (appointmentId, updateData) => {
     { new: true }
   );
   if (!appointment) throw new Error('Appointment not found');
+
+  // Handle earning generation when completed
+  if (updateData.status === 'completed') {
+    const existingEarning = await Earning.findOne({ appointmentId });
+    if (!existingEarning) {
+      const doctor = await Doctor.findOne({ user: appointment.doctorId });
+      if (doctor && doctor.consultationFee) {
+        await Earning.create({
+          staffId: appointment.doctorId,
+          staffRole: 'doctor',
+          appointmentId: appointment._id,
+          amount: doctor.consultationFee,
+          status: 'pending',
+          notes: 'Consultation fee for completed appointment'
+        });
+      }
+    }
+  }
+
   return appointment;
 };
 

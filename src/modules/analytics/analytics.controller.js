@@ -21,6 +21,28 @@ const getDashboardAnalytics = async (req, res, next) => {
   }
 };
 
+// @desc    Get Doctor Analytics
+// @route   GET /api/analytics/doctor
+// @access  Private (Doctor)
+const getDoctorAnalytics = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'doctor') {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const data = await analyticsService.getDoctorAnalytics(req.user._id);
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
-  getDashboardAnalytics
+  getDashboardAnalytics,
+  getDoctorAnalytics
 };
