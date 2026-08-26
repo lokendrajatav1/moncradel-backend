@@ -22,6 +22,15 @@ const hygieneSchema = new mongoose.Schema({
   photoUrl: {
     type: String,
     default: ''
+  },
+  completedBy: {
+    type: String, // Name of the staff who completed it
+    default: ''
+  },
+  completedById: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   }
 }, {
   timestamps: true

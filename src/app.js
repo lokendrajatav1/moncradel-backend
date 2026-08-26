@@ -69,6 +69,8 @@ const walletRoutes = require('./modules/wallet/wallet.route');
 const articleRoutes = require('./modules/article/article.routes');
 const newsletterRoutes = require('./modules/newsletter/newsletter.route');
 const activityLogRoutes = require('./modules/activityLog/activityLog.route');
+const staffRoutes = require('./modules/staff/staff.route');
+const attendanceRoutes = require('./modules/attendance/attendance.route');
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -109,6 +111,8 @@ app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/vaccinations', vaccinationRoutes);
 app.use('/api/vaccination-master', vaccinationMasterRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

@@ -5,17 +5,17 @@ const hygieneService = require('./hygiene.service');
 // @access  Private (Kitchen)
 const logHygieneTask = async (req, res, next) => {
   try {
-    if (req.user.role !== 'kitchen' && req.user.role !== 'admin') {
+    if (!['kitchen', 'admin', 'kitchen_staff'].includes(req.user.role)) {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    let targetKitchenId = req.user._id || req.user.id;
+    let targetKitchenId = req.user.role === 'kitchen_staff' ? req.user.kitchenId : (req.user._id || req.user.id);
     // If admin is creating the task, they can specify the kitchenId
     if (req.user.role === 'admin' && req.body.kitchenId) {
       targetKitchenId = req.body.kitchenId;
     }
 
-    const log = await hygieneService.logHygieneTask(targetKitchenId, req.body, req.file);
+    const log = await hygieneService.logHygieneTask(targetKitchenId, req.body, req.file, req.user);
     res.status(201).json({ success: true, data: log });
   } catch (error) {
     next(error);
@@ -27,9 +27,11 @@ const logHygieneTask = async (req, res, next) => {
 // @access  Private
 const getHygieneLogs = async (req, res, next) => {
   try {
-    // Enforce kitchenId filtering for kitchen partners
+    // Enforce kitchenId filtering for kitchen partners and staff
     if (req.user.role === 'kitchen') {
       req.query.kitchenId = req.user._id || req.user.id;
+    } else if (req.user.role === 'kitchen_staff') {
+      req.query.kitchenId = req.user.kitchenId;
     }
 
     const result = await hygieneService.getHygieneLogs(req.query);
@@ -49,11 +51,11 @@ const getHygieneLogs = async (req, res, next) => {
 // @access  Private (Kitchen/Admin)
 const updateHygieneTask = async (req, res, next) => {
   try {
-    if (req.user.role !== 'kitchen' && req.user.role !== 'admin') {
+    if (!['kitchen', 'admin', 'kitchen_staff'].includes(req.user.role)) {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    const log = await hygieneService.updateHygieneTask(req.params.id, req.body, req.file);
+    const log = await hygieneService.updateHygieneTask(req.params.id, req.body, req.file, req.user);
     res.status(200).json({ success: true, data: log });
   } catch (error) {
     next(error);
@@ -65,7 +67,7 @@ const updateHygieneTask = async (req, res, next) => {
 // @access  Private (Kitchen/Admin)
 const deleteHygieneTask = async (req, res, next) => {
   try {
-    if (req.user.role !== 'kitchen' && req.user.role !== 'admin') {
+    if (!['kitchen', 'admin', 'kitchen_staff'].includes(req.user.role)) {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 

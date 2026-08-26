@@ -4,6 +4,7 @@ const Customer = require('../customer/customer.model');
 const Doctor = require('../doctor/doctor.model');
 const DeliveryPartner = require('../deliveryPartner/deliveryPartner.model');
 const KitchenPartner = require('../kitchenPartner/kitchenPartner.model');
+const Staff = require('../staff/staff.model');
 const { uploadToCloudinary } = require('../../utils/cloudinary');
 
 const getModelByRole = (role) => {
@@ -12,6 +13,7 @@ const getModelByRole = (role) => {
     case 'doctor': return Doctor;
     case 'delivery': return DeliveryPartner;
     case 'kitchen': return KitchenPartner;
+    case 'kitchen_staff': return Staff;
     default: return null;
   }
 };

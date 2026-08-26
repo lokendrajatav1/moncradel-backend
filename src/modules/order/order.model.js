@@ -74,6 +74,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  packagingProofImageUrl: {
+    type: String,
+    default: ''
+  },
   totalAmount: {
     type: Number,
     required: true,
