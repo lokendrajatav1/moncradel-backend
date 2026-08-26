@@ -73,6 +73,52 @@ const getDashboardAnalytics = async () => {
     { $project: { name: '$meal.name', count: 1 } }
   ]);
 
+  // 8. User Growth (last 6 months)
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setDate(1);
+  sixMonthsAgo.setHours(0,0,0,0);
+  
+  const userGrowthAgg = await User.aggregate([
+    { $match: { createdAt: { $gte: sixMonthsAgo } } },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ]);
+  
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const userGrowth = userGrowthAgg.map(item => {
+    const [year, month] = item._id.split('-');
+    return {
+      name: `${monthNames[parseInt(month, 10) - 1]} ${year}`,
+      users: item.count
+    };
+  });
+
+  // 9. Sales by Category (Age Group)
+  const salesByCategory = await Order.aggregate([
+    { $unwind: '$items' },
+    { $match: { 'items.mealId': { $exists: true, $ne: null } } },
+    { $lookup: { from: 'meals', localField: 'items.mealId', foreignField: '_id', as: 'meal' } },
+    { $unwind: '$meal' },
+    { $group: { _id: '$meal.suitableForAgeGroup', value: { $sum: '$items.quantity' } } },
+    { $project: { name: '$_id', value: 1, _id: 0 } }
+  ]);
+
+  // 10. Order Status Distribution (Last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const orderStatusDistribution = await Order.aggregate([
+    { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+    { $group: { _id: '$status', value: { $sum: 1 } } },
+    { $project: { name: '$_id', value: 1, _id: 0 } }
+  ]);
+
   return {
     users: {
       total: totalUsers,
@@ -90,7 +136,10 @@ const getDashboardAnalytics = async () => {
     },
     recentOrders,
     weeklyRevenue,
-    topMeals
+    topMeals,
+    userGrowth,
+    salesByCategory,
+    orderStatusDistribution
   };
 };
 

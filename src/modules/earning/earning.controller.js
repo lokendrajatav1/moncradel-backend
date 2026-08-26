@@ -13,6 +13,7 @@ const getEarnings = async (req, res, next) => {
       staffRole: req.query.staffRole,
       status: req.query.status,
       search: req.query.search,
+      staffId: req.query.staffId,
       page: req.query.page,
       limit: req.query.limit
     };

@@ -55,6 +55,10 @@ const babySchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  currentSymptoms: {
+    type: [String],
+    default: []
+  },
   parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

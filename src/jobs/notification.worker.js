@@ -18,22 +18,22 @@ const worker = new Worker('NotificationQueue', async (job) => {
         message: job.data.message,
         orderId: job.data.orderId
       }));
-      
+
       if (notifications.length > 0) {
         await Notification.insertMany(notifications);
       }
-      
+
       // Send Real-time Push Notification to Admins
       for (const admin of admins) {
         if (admin.fcmToken) {
           sendPushNotification(admin.fcmToken, job.data.title || 'New System Notification', job.data.message);
         }
       }
-      
+
       console.log(`Sent notification to ${notifications.length} admins.`);
     } else {
       if (!job.data.userId) throw new Error('userId is required');
-      
+
       // Save to database
       await Notification.create({
         userId: job.data.userId,
@@ -41,14 +41,14 @@ const worker = new Worker('NotificationQueue', async (job) => {
         message: job.data.message,
         orderId: job.data.orderId
       });
-      
+
       // Find user and send push notification
       const User = require('../modules/user/user.model');
       const user = await User.findById(job.data.userId);
       if (user && user.fcmToken) {
         sendPushNotification(user.fcmToken, job.data.title || 'New Notification', job.data.message);
       }
-      
+
       console.log(`Notification sent and saved for ${job.data.userId} with message: "${job.data.message}"`);
     }
 

@@ -54,9 +54,26 @@ const deleteBanner = async (req, res, next) => {
   }
 };
 
+// @desc    Reorder banners
+// @route   PUT /api/banners/reorder
+// @access  Public (temporarily)
+const reorderBanners = async (req, res, next) => {
+  try {
+    const { bannerIds } = req.body;
+    if (!bannerIds || !Array.isArray(bannerIds)) {
+      return res.status(400).json({ success: false, message: 'bannerIds array is required' });
+    }
+    await bannerService.reorderBanners(bannerIds);
+    res.status(200).json({ success: true, message: 'Banners reordered successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createBanner,
   getBanners,
   updateBanner,
-  deleteBanner
+  deleteBanner,
+  reorderBanners
 };

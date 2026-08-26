@@ -2,6 +2,7 @@ const Order = require('./order.model');
 const Meal = require('../meal/meal.model');
 const Product = require('../product/product.model');
 const APIFeatures = require('../../utils/apiFeatures');
+const couponService = require('../coupon/coupon.service');
 
 /**
  * Create a new order
@@ -13,6 +14,21 @@ const createOrder = async (orderData, parentId) => {
   for (const item of orderData.items || []) {
     if (item.itemType === 'product') hasProduct = true;
     finalPrice += (item.priceAtAddition || 0) * (item.quantity || 1);
+  }
+
+  let discountAmount = 0;
+  let appliedCouponCode = '';
+
+  if (orderData.couponCode) {
+    try {
+      const couponResult = await couponService.applyCoupon(orderData.couponCode, finalPrice);
+      discountAmount = couponResult.discountAmount;
+      finalPrice = couponResult.finalAmount;
+      appliedCouponCode = orderData.couponCode;
+    } catch (err) {
+      console.error('Failed to apply coupon during order creation', err);
+      throw new Error(err.message || 'Failed to apply coupon');
+    }
   }
 
   let isOtpRequired = false;
@@ -28,6 +44,8 @@ const createOrder = async (orderData, parentId) => {
     ...orderData,
     parentId,
     totalAmount: finalPrice,
+    couponCode: appliedCouponCode,
+    discountAmount: discountAmount,
     isOtpRequired,
     deliveryOtp
   });

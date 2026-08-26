@@ -13,6 +13,12 @@ const applyCoupon = async (code, cartTotal) => {
     throw error;
   }
 
+  if (coupon.minOrderAmount && cartTotal < coupon.minOrderAmount) {
+    const error = new Error(`Order amount must be at least ₹${coupon.minOrderAmount} to use this coupon`);
+    error.statusCode = 400;
+    throw error;
+  }
+
   if (new Date() > new Date(coupon.expiryDate)) {
     const error = new Error('Coupon has expired');
     error.statusCode = 400;

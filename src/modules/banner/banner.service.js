@@ -34,7 +34,7 @@ const createBanner = async (bannerData, file) => {
 const getBanners = async (userRole) => {
   // If Admin, show all. If user, show only active
   const filter = userRole === 'admin' ? {} : { isActive: true };
-  return await Banner.find(filter).sort('-createdAt');
+  return await Banner.find(filter).sort({ sortOrder: 1, createdAt: -1 });
 };
 
 /**
@@ -68,9 +68,27 @@ const deleteBanner = async (id) => {
   return await Banner.findByIdAndDelete(id);
 };
 
+/**
+ * Reorder banners
+ */
+const reorderBanners = async (bannerIds) => {
+  const operations = bannerIds.map((id, index) => ({
+    updateOne: {
+      filter: { _id: id },
+      update: { $set: { sortOrder: index } }
+    }
+  }));
+
+  if (operations.length > 0) {
+    await Banner.bulkWrite(operations);
+  }
+  return true;
+};
+
 module.exports = {
   createBanner,
   getBanners,
   updateBanner,
-  deleteBanner
+  deleteBanner,
+  reorderBanners
 };
