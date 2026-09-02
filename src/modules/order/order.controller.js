@@ -25,13 +25,25 @@ const createOrder = async (req, res) => {
 
     const order = await orderService.createOrder(req.body, parentId);
 
-    // Notify listeners about the new order (e.g., for push notifications, emails, etc.)
-    eventEmitter.emit('order.created', { order, user: req.user });
+    // Only notify kitchen/listeners IMMEDIATELY if it's a Cash on Delivery order.
+    // For online payments, we should wait until the payment succeeds.
+    if (order.paymentMethod === 'cod') {
+      // Create a Payment record for COD so it shows up in Admin > Payments
+      const Payment = require('../payment/payment.model');
+      await Payment.create({
+        userId: parentId,
+        amount: order.totalAmount,
+        orderId: order._id,
+        status: 'pending'
+      });
 
-    // Emitting real-time event to the kitchen using Socket.io
-    const io = req.app.get('io');
-    if (io) {
-      io.emit('new_order', { orderId: order._id, mealId: order.mealId, status: 'pending' });
+      eventEmitter.emit('order.created', { order, user: req.user });
+
+      // Emitting real-time event to the kitchen using Socket.io
+      const io = req.app.get('io');
+      if (io) {
+        io.emit('new_order', { orderId: order._id, mealId: order.mealId, status: 'pending' });
+      }
     }
 
     res.status(201).json({ success: true, data: order });
@@ -117,11 +129,45 @@ const getOrders = async (req, res) => {
           filters.$or = deliveryFilter.$or;
         }
       }
+      
+      // Filter out online prepaid orders that are NOT paid yet from everyone EXCEPT parents.
+      // Parents should still see their pending/failed online orders so they can track or retry.
+      if (req.user.role !== 'parent') {
+        const validPaymentFilter = {
+          $or: [
+            { paymentMethod: 'cod' },
+            { paymentMethod: { $in: ['upi', 'card'] }, paymentStatus: 'paid' }
+          ]
+        };
+        
+        if (filters.$and) {
+          filters.$and.push(validPaymentFilter);
+        } else if (filters.$or) {
+          filters.$and = [ { $or: filters.$or }, validPaymentFilter ];
+          delete filters.$or;
+        } else {
+          Object.assign(filters, validPaymentFilter);
+        }
+      }
     }
-    // If no req.user (admin unprotected testing), filters remain {} -> returns all orders.
+    // If role is kitchen or delivery, we only want orders that have at least one NON-subscription item
+    if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
+       filters['items'] = { $elemMatch: { isSubscription: { $ne: true } } };
+    }
 
     const { totalCount, data: orders } = await orderService.getOrders(filters, req.query);
-    res.status(200).json({ success: true, count: orders.length, total: totalCount, data: orders });
+
+    // Strip subscription items from the response for kitchen and delivery
+    let processedOrders = orders;
+    if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
+       processedOrders = orders.map(order => {
+          const orderObj = order.toObject ? order.toObject() : order;
+          orderObj.items = orderObj.items.filter(item => !item.isSubscription);
+          return orderObj;
+       });
+    }
+
+    res.status(200).json({ success: true, count: processedOrders.length, total: totalCount, data: processedOrders });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -219,12 +265,26 @@ const updateOrderStatus = async (req, res) => {
           amount: 50,
           status: 'pending'
         });
+
+        // If it's a COD order, mark the associated Payment as success since money is collected
+        if (orderToDeliver.paymentMethod === 'cod') {
+          const Payment = require('../payment/payment.model');
+          await Payment.findOneAndUpdate(
+            { orderId: req.params.id },
+            { status: 'success' }
+          );
+        }
       } catch (err) {
-        console.error("Could not generate earning", err);
+        console.error("Could not generate earning or update COD payment", err);
       }
     }
 
     const order = await orderService.updateOrderStatus(req.params.id, status, updatedFields);
+
+    // Restore stock if cancelled
+    if (status === 'cancelled') {
+      await orderService.restoreProductStock(req.params.id);
+    }
 
     // Notify delivery partner when order is ready to be picked up
     if (status === 'ready' && order.deliveryId) {
@@ -257,14 +317,17 @@ const updateOrderStatus = async (req, res) => {
 // @access  Private
 const getOrderById = async (req, res) => {
   try {
-    const order = await orderService.getOrderById(req.params.id);
+    const orderDoc = await orderService.getOrderById(req.params.id);
     
-    if (!order) {
+    if (!orderDoc) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    // Role-based visibility check could be added here if needed,
-    // but for now we'll just return the order to any authenticated user who has the ID.
+    let order = orderDoc.toObject ? orderDoc.toObject() : orderDoc;
+
+    if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
+       order.items = order.items.filter(item => !item.isSubscription);
+    }
     
     res.status(200).json({ success: true, data: order });
   } catch (error) {

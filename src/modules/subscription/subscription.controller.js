@@ -14,10 +14,6 @@ const createSubscription = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'parentId is required when creating as admin' });
     }
     const subscription = await subscriptionService.createSubscription(req.body, parentId);
-    
-    // Notify listeners about the new subscription
-    eventEmitter.emit('subscription.created', { subscription, user: req.user });
-
     res.status(201).json({ success: true, data: subscription });
   } catch (error) {
     next(error);
@@ -42,10 +38,10 @@ const getSubscriptions = async (req, res, next) => {
 // @access  Private (Admin)
 const updateSubscription = async (req, res, next) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'parent') {
       return res.status(403).json({ success: false, message: 'Not authorized to update subscriptions' });
     }
-    const subscription = await subscriptionService.updateSubscription(req.params.id, req.body);
+    const subscription = await subscriptionService.updateSubscription(req.params.id, req.body, req.user);
     res.status(200).json({ success: true, data: subscription });
   } catch (error) {
     if (error.message === 'Subscription not found') {
@@ -73,9 +69,50 @@ const deleteSubscription = async (req, res, next) => {
   }
 };
 
+// @desc    Skip a scheduled meal in a subscription
+// @route   PATCH /api/subscriptions/:id/skip/:scheduleId
+// @access  Private (Parent)
+const skipMeal = async (req, res, next) => {
+  try {
+    const subscription = await subscriptionService.skipMeal(req.params.id, req.params.scheduleId, req.user);
+    res.status(200).json({ success: true, data: subscription });
+  } catch (error) {
+    if (error.message.includes('not found')) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    if (error.message.includes('Too late') || error.message.includes('Can only skip')) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
+// @desc    Update special instructions for a scheduled meal
+// @route   PATCH /api/subscriptions/:id/instructions/:scheduleId
+// @access  Private (Parent)
+const updateInstructions = async (req, res, next) => {
+  try {
+    const { specialInstructions } = req.body;
+    const subscription = await subscriptionService.updateInstructions(
+      req.params.id,
+      req.params.scheduleId,
+      specialInstructions,
+      req.user
+    );
+    res.status(200).json({ success: true, data: subscription });
+  } catch (error) {
+    if (error.message.includes('not found')) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
 module.exports = {
   createSubscription,
   getSubscriptions,
   updateSubscription,
-  deleteSubscription
+  deleteSubscription,
+  skipMeal,
+  updateInstructions
 };

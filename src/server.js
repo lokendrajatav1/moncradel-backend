@@ -15,9 +15,14 @@ connectDB();
 
 // Initialize BullMQ Workers
 require('./jobs/notification.worker');
+require('./jobs/subscription.worker');
 
 // Initialize Global Event Listeners
 require('./events/notification.listeners');
+
+// Start BullMQ Schedulers
+const { scheduleDailySubscriptionJob } = require('./queues/subscription.queue');
+scheduleDailySubscriptionJob().catch(err => console.error('Failed to schedule subscription job:', err));
 
 // Create HTTP Server and Initialize Socket.io
 const server = http.createServer(app);

@@ -25,7 +25,7 @@ const createAdmin = async () => {
       {
         name: 'Super Admin',
         password: hashedPassword,
-        phone: '1234567890',
+        phone: '111222' + Math.floor(1000 + Math.random() * 9000).toString(),
         role: 'admin',
         isActive: true
       },

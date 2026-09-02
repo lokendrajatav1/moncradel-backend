@@ -10,6 +10,14 @@ const addressSchema = new mongoose.Schema({
     type: String, // 'Home', 'Office', etc.
     required: true
   },
+  name: {
+    type: String,
+    required: true
+  },
+  flat: {
+    type: String,
+    required: true
+  },
   street: {
     type: String,
     required: true
@@ -33,6 +41,17 @@ const addressSchema = new mongoose.Schema({
   isDefault: {
     type: Boolean,
     default: false
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      index: '2dsphere'
+    }
   }
 }, {
   timestamps: true

@@ -54,7 +54,8 @@ const getPayments = async (filters = {}) => {
 
   let paymentsQuery = Payment.find(query)
     .populate('userId', 'name email phone')
-    .populate('orderId', 'totalAmount')
+    .populate('orderId', 'totalAmount paymentMethod')
+    .populate('subscriptionId', 'totalAmount')
     .sort('-createdAt')
     .skip(skip)
     .limit(Number(limit));

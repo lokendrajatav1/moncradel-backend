@@ -22,6 +22,21 @@ const cartItemSchema = new mongoose.Schema({
   priceAtAddition: {
     type: Number,
     required: true
+  },
+  isSubscription: {
+    type: Boolean,
+    default: false
+  },
+  deliveryDates: [{
+    type: Date
+  }],
+  timeSlot: {
+    type: String,
+    default: ''
+  },
+  specialInstructions: {
+    type: String,
+    default: ''
   }
 });
 

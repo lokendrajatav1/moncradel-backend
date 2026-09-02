@@ -10,11 +10,19 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Baby'
   },
+  mealSubscriptionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'MealSubscription'
+  },
   items: [{
     itemType: {
       type: String,
       enum: ['meal', 'product'],
       required: true
+    },
+    isSubscription: {
+      type: Boolean,
+      default: false
     },
     mealId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,6 +40,14 @@ const orderSchema = new mongoose.Schema({
     priceAtAddition: {
       type: Number,
       required: true
+    },
+    timeSlot: {
+      type: String,
+      default: ''
+    },
+    specialInstructions: {
+      type: String,
+      default: ''
     },
     status: {
       type: String,
@@ -51,6 +67,16 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'],
     default: 'pending'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'failed'],
+    default: 'pending'
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['upi', 'card', 'cod'],
+    default: 'cod'
   },
   deliveryAddress: {
     street: String,

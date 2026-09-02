@@ -14,8 +14,30 @@ const subscriptionSchema = new mongoose.Schema({
   planId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'SubscriptionPlan',
-    required: true
+    required: false // Optional for custom meal subscriptions
   },
+  totalAmount: {
+    type: Number,
+    default: 0
+  },
+  deliveryAddressId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address'
+  },
+  deliverySchedule: [{
+    date: { type: Date, required: true },
+    mealId: { type: mongoose.Schema.Types.ObjectId, ref: 'Meal' },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+    timeSlot: { type: String, default: '' },
+    specialInstructions: { type: String, default: '' },
+    status: {
+      type: String,
+      enum: ['pending', 'skipped', 'ordered', 'delivered'],
+      default: 'pending'
+    },
+    carriedForwardFrom: { type: Date },
+    orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' }
+  }],
   startDate: {
     type: Date,
     default: Date.now

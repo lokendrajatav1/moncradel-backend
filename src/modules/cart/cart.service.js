@@ -21,7 +21,7 @@ const getCartByUserId = async (userId) => {
  * Add an item to the cart
  */
 const addToCart = async (userId, itemData) => {
-  const { itemType, itemId, quantity } = itemData;
+  const { itemType, itemId, quantity, isSubscription, deliveryDates, timeSlot, specialInstructions } = itemData;
   
   let price = 0;
   if (itemType === 'meal') {
@@ -35,24 +35,43 @@ const addToCart = async (userId, itemData) => {
     price = (product.discountedPrice && product.discountedPrice > 0) ? product.discountedPrice : (product.price || 0);
   }
 
+  // Multiply price if it's a subscription with multiple dates
+  if (isSubscription && deliveryDates && deliveryDates.length > 0) {
+    price = price * deliveryDates.length;
+  }
+
   let cart = await Cart.findOne({ userId });
   if (!cart) {
     cart = await Cart.create({ userId, items: [], totalPrice: 0 });
   }
 
-  // Check if item already exists in cart
-  const existingItemIndex = cart.items.findIndex(item => 
-    (itemType === 'meal' && item.mealId?.toString() === itemId) || 
-    (itemType === 'product' && item.productId?.toString() === itemId)
-  );
+  // For subscriptions, we don't merge identical items, we treat them as separate cart items
+  let existingItemIndex = -1;
+  if (!isSubscription) {
+    existingItemIndex = cart.items.findIndex(item => 
+      !item.isSubscription &&
+      ((itemType === 'meal' && item.mealId?.toString() === itemId) || 
+      (itemType === 'product' && item.productId?.toString() === itemId))
+    );
+  }
 
   if (existingItemIndex > -1) {
+    if (itemType === 'product') {
+      const product = await Product.findById(itemId);
+      if (product && cart.items[existingItemIndex].quantity + quantity > product.stockQuantity) {
+        throw new Error('Insufficient stock');
+      }
+    }
     cart.items[existingItemIndex].quantity += quantity;
   } else {
     const newItem = {
       itemType,
       quantity,
-      priceAtAddition: price
+      priceAtAddition: price,
+      isSubscription: isSubscription || false,
+      deliveryDates: deliveryDates || [],
+      timeSlot,
+      specialInstructions
     };
     if (itemType === 'meal') newItem.mealId = itemId;
     if (itemType === 'product') newItem.productId = itemId;
@@ -105,6 +124,12 @@ const updateItemQuantity = async (userId, itemId, quantity) => {
   if (quantity <= 0) {
     cart.items = cart.items.filter(i => i._id.toString() !== itemId);
   } else {
+    if (item.itemType === 'product') {
+      const product = await Product.findById(item.productId);
+      if (product && quantity > product.stockQuantity) {
+        throw new Error('Insufficient stock');
+      }
+    }
     item.quantity = quantity;
   }
   cart.totalPrice = cart.items.reduce((t, i) => t + i.priceAtAddition * i.quantity, 0);
