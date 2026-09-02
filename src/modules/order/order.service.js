@@ -8,12 +8,57 @@ const couponService = require('../coupon/coupon.service');
  * Create a new order
  */
 const createOrder = async (orderData, parentId) => {
+  const subscriptionService = require('../subscription/subscription.service');
+
   let finalPrice = 0;
   let hasProduct = false;
 
+  const regularItems = [];
+  let subscriptionSchedules = [];
+
+  // Validate and deduct stock for products
   for (const item of orderData.items || []) {
-    if (item.itemType === 'product') hasProduct = true;
-    finalPrice += (item.priceAtAddition || 0) * (item.quantity || 1);
+    if (item.itemType === 'product') {
+      hasProduct = true;
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        throw new Error(`Product not found`);
+      }
+      if (product.stockQuantity < (item.quantity || 1)) {
+        throw new Error(`Product ${product.name} is out of stock`);
+      }
+      // Deduct stock for immediate products (not future subscription deliveries)
+      if (!item.isSubscription) {
+        product.stockQuantity -= (item.quantity || 1);
+        await product.save();
+      }
+    }
+
+    if (item.isSubscription && item.deliveryDates && item.deliveryDates.length > 0) {
+      // Calculate total price for this subscription item based on number of deliveries
+      finalPrice += (item.priceAtAddition || 0) * (item.quantity || 1) * item.deliveryDates.length;
+      
+      // Expand into schedule
+      for (const dateStr of item.deliveryDates) {
+        // If quantity is > 1, add multiple schedule entries or handle it in schedule.
+        // We will just add one schedule entry but what if quantity is 2?
+        // Let's create multiple schedule entries for each quantity, or assume quantity applies per date.
+        // To be safe, we push a single schedule object and if they want 2 meals, they get 2 schedule entries.
+        for(let q = 0; q < (item.quantity || 1); q++) {
+          subscriptionSchedules.push({
+            date: new Date(dateStr),
+            mealId: item.mealId,
+            productId: item.productId,
+            timeSlot: item.timeSlot,
+            specialInstructions: item.specialInstructions,
+            status: 'pending'
+          });
+        }
+      }
+    } else {
+      finalPrice += (item.priceAtAddition || 0) * (item.quantity || 1);
+      regularItems.push(item);
+    }
   }
 
   let discountAmount = 0;
@@ -40,12 +85,47 @@ const createOrder = async (orderData, parentId) => {
     deliveryOtp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
   }
 
+  let createdSubscription = null;
+
+  if (subscriptionSchedules.length > 0) {
+    // If they have subscriptions, we need babyId. If not provided, fetch first baby for the user
+    let babyId = orderData.babyId;
+    if (!babyId) {
+       const Baby = require('../baby/baby.model');
+       const baby = await Baby.findOne({ parentId });
+       if (baby) {
+         babyId = baby._id;
+       } else {
+         // Create a dummy baby profile if none exists, as Subscription requires it
+         const newBaby = await Baby.create({ parentId, name: 'My Baby', ageInMonths: 12 });
+         babyId = newBaby._id;
+       }
+    }
+
+    let addressId = null;
+    if (orderData.deliveryAddress) {
+       const Address = require('../address/address.model');
+       const addr = await Address.findOne({ userId: parentId });
+       if (addr) addressId = addr._id;
+    }
+
+    createdSubscription = await subscriptionService.createSubscription({
+      babyId,
+      deliverySchedule: subscriptionSchedules,
+      deliveryAddressId: addressId,
+      totalAmount: Math.round(finalPrice),
+    }, parentId);
+  }
+
   const order = await Order.create({
     ...orderData,
     parentId,
-    totalAmount: finalPrice,
+    // We store ALL items in the order so the user sees what they paid for
+    items: orderData.items, 
+    mealSubscriptionId: createdSubscription ? createdSubscription._id : null,
+    totalAmount: Math.round(finalPrice),
     couponCode: appliedCouponCode,
-    discountAmount: discountAmount,
+    discountAmount: Math.round(discountAmount),
     isOtpRequired,
     deliveryOtp
   });
@@ -68,7 +148,7 @@ const getOrders = async (filters = {}, queryString = {}) => {
   const data = await features.query
     .populate('parentId', 'name email phone')
     .populate('babyId', 'name ageInMonths allergies')
-    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice')
+    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice category')
     .populate('items.productId', 'name price imageUrl discountedPrice')
     .populate('kitchenId', 'name phone address')
     .populate('deliveryId', 'name phone');
@@ -94,15 +174,34 @@ const getOrderById = async (orderId) => {
   return await Order.findById(orderId)
     .populate('parentId', 'name email phone')
     .populate('babyId', 'name ageInMonths allergies')
-    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice')
+    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice category')
     .populate('items.productId', 'name price imageUrl discountedPrice')
     .populate('kitchenId', 'name phone address')
     .populate('deliveryId', 'name phone');
+};
+
+/**
+ * Restore product stock (used when order is cancelled or payment fails)
+ */
+const restoreProductStock = async (orderId) => {
+  const order = await Order.findById(orderId);
+  if (!order) return;
+
+  for (const item of order.items || []) {
+    if (item.itemType === 'product' && item.productId) {
+      const product = await Product.findById(item.productId);
+      if (product) {
+        product.stockQuantity += (item.quantity || 1);
+        await product.save();
+      }
+    }
+  }
 };
 
 module.exports = {
   createOrder,
   getOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  restoreProductStock
 };

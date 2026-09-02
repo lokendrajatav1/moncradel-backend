@@ -24,6 +24,11 @@ const addProduct = async (req, res, next) => {
 // @access  Public
 const getProducts = async (req, res, next) => {
   try {
+    // For non-admin, always filter out draft (inactive) products
+    if (!req.user || req.user.role !== 'admin') {
+      req.query.isActive = true;
+    }
+    
     // For admin, return all products, even out of stock
     const { data: products, totalCount } = await productService.getAllProducts(req.query);
     res.status(200).json({ success: true, count: totalCount, data: products });

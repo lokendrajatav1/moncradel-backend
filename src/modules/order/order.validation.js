@@ -8,7 +8,11 @@ const createOrderSchema = z.object({
     mealId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
     productId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
     quantity: z.number().min(1),
-    priceAtAddition: z.number().min(0)
+    priceAtAddition: z.number().min(0),
+    isSubscription: z.boolean().optional(),
+    deliveryDates: z.array(z.string()).optional(),
+    timeSlot: z.string().optional(),
+    specialInstructions: z.string().optional()
   })).min(1, "Order must have at least one item"),
   deliveryAddress: z.object({
     street: z.string(),
@@ -16,7 +20,9 @@ const createOrderSchema = z.object({
     state: z.string(),
     zipCode: z.string()
   }).optional(),
-  specialInstructions: z.string().optional()
+  specialInstructions: z.string().optional(),
+  couponCode: z.string().optional(),
+  paymentMethod: z.enum(['upi', 'card', 'cod']).optional()
 });
 
 const updateOrderSchema = z.object({

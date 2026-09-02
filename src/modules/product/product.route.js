@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { addProduct, getProducts, getProductById, updateProduct, deleteProduct, getProductFilters } = require('./product.controller');
-const { protect } = require('../../middleware/auth');
+const { protect, optionalProtect } = require('../../middleware/auth');
 const upload = require('../../middleware/upload');
 const validate = require('../../middleware/validate');
 const { addProductSchema, updateProductSchema } = require('./product.validation');
@@ -9,7 +9,7 @@ const { addProductSchema, updateProductSchema } = require('./product.validation'
 // Temporarily unprotected for testing
 router.route('/')
   .post(upload.array('images', 5), validate(addProductSchema), addProduct)
-  .get(getProducts);
+  .get(optionalProtect, getProducts);
 
 router.get('/filters', getProductFilters);
 

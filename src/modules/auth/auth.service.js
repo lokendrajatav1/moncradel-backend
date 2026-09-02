@@ -101,6 +101,8 @@ const authenticateUser = async (email, password) => {
     _id: user.id,
     name: user.name,
     email: user.email,
+    phone: user.phone,
+    gender: user.gender,
     role: user.role,
     avatar: user.avatar,
     token: generateToken(user._id)
@@ -293,9 +295,11 @@ const resetPassword = async ({ token, otp, email, password }) => {
 
   return {
     _id: user.id,
-    name: user.name,
-    email: user.email,
-    token: generateToken(user._id)
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      gender: user.gender,
+      token: generateToken(user._id)
   };
 };
 
