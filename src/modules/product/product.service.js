@@ -74,9 +74,9 @@ const getAllProducts = async (queryString = {}) => {
   // count total before pagination
   const countQuery = new APIFeatures(Product.find(filter), queryString).filter();
   const totalCount = await countQuery.query.countDocuments();
-  
+
   const data = await features.query.lean();
-  
+
   // Fetch ratings for these paginated products
   const productIds = data.map(p => p._id);
   const reviewsInfo = await Review.aggregate([
@@ -131,7 +131,7 @@ const getProductById = async (id) => {
  */
 const updateProduct = async (id, productData, files) => {
   const { name, description, price, category, stockQuantity, isActive, brand, discountedPrice, sku, ageGroup, isFeatured } = productData;
-  
+
   let existingImages = [];
   if (productData.existingImages) {
     try {
@@ -210,12 +210,18 @@ const deleteProduct = async (id) => {
  * Get product filters (dynamic categories and age groups)
  */
 const getProductFilters = async () => {
-  const categories = await Product.distinct('category');
-  const ageGroups = await Product.distinct('ageGroup');
-  
+  const categories = await Product.distinct('category', { isActive: { $ne: false } });
+  const ageGroups = await Product.distinct('ageGroup', { isActive: { $ne: false } });
+
+  const defaultCategories = ['Feeding', 'Diapers', 'Skincare', 'Clothing', 'Toys', 'Health', 'Organic'];
+  const defaultAgeGroups = ['0-6 months', '6-12 months', '1-3 years', '3+ years'];
+
+  const combinedCategories = Array.from(new Set([...categories.filter(Boolean), ...defaultCategories]));
+  const combinedAgeGroups = Array.from(new Set([...ageGroups.filter(Boolean), ...defaultAgeGroups]));
+
   return {
-    categories: categories.filter(Boolean),
-    ageGroups: ageGroups.filter(Boolean)
+    categories: combinedCategories,
+    ageGroups: combinedAgeGroups
   };
 };
 

@@ -24,6 +24,15 @@ const doctorSchema = new mongoose.Schema(
     clinicAddress: {
       type: String
     },
+    city: {
+      type: String
+    },
+    state: {
+      type: String
+    },
+    pincode: {
+      type: String
+    },
     registrationNumber: {
       type: String
     },

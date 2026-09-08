@@ -7,7 +7,7 @@ const Product = require('../product/product.model');
  */
 const getCartByUserId = async (userId) => {
   let cart = await Cart.findOne({ userId })
-    .populate('items.mealId', 'name imageUrl price')
+    .populate('items.mealId', 'name imageUrl images price')
     .populate('items.productId', 'name imageUrl images price stockQuantity');
 
   if (!cart) {
@@ -83,7 +83,7 @@ const addToCart = async (userId, itemData) => {
   cart.totalPrice = cart.items.reduce((total, item) => total + (item.priceAtAddition * item.quantity), 0);
   
   await cart.save();
-  await cart.populate('items.mealId', 'name imageUrl price');
+  await cart.populate('items.mealId', 'name imageUrl images price');
   await cart.populate('items.productId', 'name imageUrl images price stockQuantity');
   return cart;
 };

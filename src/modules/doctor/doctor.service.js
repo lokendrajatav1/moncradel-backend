@@ -1,4 +1,5 @@
 const Doctor = require('./doctor.model');
+const Review = require('../review/review.model');
 const APIFeatures = require('../../utils/apiFeatures');
 
 const getAllDoctors = async (queryString = {}) => {
@@ -6,11 +7,55 @@ const getAllDoctors = async (queryString = {}) => {
     .filter()
     .sort()
     .paginate();
-  return await features.query;
+  const doctors = await features.query.lean();
+
+  // Aggregate reviews for all doctors
+  const doctorUserIds = doctors.map(d => d.user?._id || d.user).filter(Boolean);
+  const doctorDocIds = doctors.map(d => d._id).filter(Boolean);
+  const allIds = [...doctorUserIds, ...doctorDocIds];
+
+  const reviewsInfo = await Review.aggregate([
+    { $match: { doctorId: { $in: allIds }, targetType: 'doctor' } },
+    { $group: { _id: '$doctorId', averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  const reviewMap = {};
+  reviewsInfo.forEach(info => {
+    reviewMap[info._id.toString()] = info;
+  });
+
+  doctors.forEach(doc => {
+    const userIdStr = doc.user?._id?.toString() || doc.user?.toString();
+    const docIdStr = doc._id?.toString();
+    const info = reviewMap[userIdStr] || reviewMap[docIdStr];
+    if (info) {
+      doc.rating = Math.round(info.averageRating * 10) / 10;
+      doc.reviewsCount = info.reviewsCount;
+    } else {
+      doc.rating = doc.rating || 0;
+      doc.reviewsCount = doc.reviewsCount || 0;
+    }
+  });
+
+  return doctors;
 };
 
 const getDoctorById = async (userId) => {
-  return await Doctor.findOne({ user: userId }).populate('user', 'name email phone role isActive avatar');
+  const doctor = await Doctor.findOne({ user: userId }).populate('user', 'name email phone role isActive avatar').lean();
+  if (!doctor) return null;
+
+  const userObjId = doctor.user?._id || doctor.user;
+  const reviewsInfo = await Review.aggregate([
+    { $match: { doctorId: { $in: [userObjId, doctor._id] }, targetType: 'doctor' } },
+    { $group: { _id: null, averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
+  ]);
+
+  if (reviewsInfo.length > 0) {
+    doctor.rating = Math.round(reviewsInfo[0].averageRating * 10) / 10;
+    doctor.reviewsCount = reviewsInfo[0].reviewsCount;
+  }
+
+  return doctor;
 };
 
 const updateDoctor = async (userId, data) => {

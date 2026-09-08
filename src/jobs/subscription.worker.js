@@ -11,7 +11,7 @@ const worker = new Worker('SubscriptionQueue', async (job) => {
     try {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
-      
+
       const todayEnd = new Date();
       todayEnd.setHours(23, 59, 59, 999);
 
@@ -46,7 +46,7 @@ const worker = new Worker('SubscriptionQueue', async (job) => {
 
           for (let delivery of todaysDeliveries) {
             const itemType = delivery.mealId ? 'meal' : 'product';
-            
+
             const orderItems = [{
               itemType,
               mealId: delivery.mealId,
@@ -63,7 +63,7 @@ const worker = new Worker('SubscriptionQueue', async (job) => {
               babyId: sub.babyId,
               mealSubscriptionId: sub._id,
               items: orderItems,
-              totalAmount: 0, 
+              totalAmount: 0,
               paymentStatus: 'paid',
               paymentMethod: 'cod',
               deliveryAddress: addressData || {},
@@ -72,18 +72,18 @@ const worker = new Worker('SubscriptionQueue', async (job) => {
 
             delivery.status = 'ordered';
             delivery.orderId = newOrder._id;
-            
+
             console.log(`Generated Order ${newOrder._id} for Subscription ${sub._id}`);
 
             eventEmitter.emit('order.created', { order: newOrder });
           }
-          
+
           await sub.save();
         } catch (err) {
           console.error(`Failed to process subscription ${sub._id}:`, err);
         }
       }
-      
+
       console.log('Daily Subscription Order Generator finished successfully.');
       return { success: true, processed: subscriptions.length };
     } catch (error) {

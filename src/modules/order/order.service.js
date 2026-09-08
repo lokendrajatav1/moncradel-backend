@@ -148,10 +148,13 @@ const getOrders = async (filters = {}, queryString = {}) => {
   const data = await features.query
     .populate('parentId', 'name email phone')
     .populate('babyId', 'name ageInMonths allergies')
-    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice category')
-    .populate('items.productId', 'name price imageUrl discountedPrice')
+    .populate('items.mealId', 'name price imageUrl images nutritionalInfo discountedPrice category')
+    .populate('items.productId', 'name price imageUrl images discountedPrice')
     .populate('kitchenId', 'name phone address')
-    .populate('deliveryId', 'name phone');
+    .populate('deliveryId', 'name phone')
+    .populate('cancelledBy', 'name role email phone')
+    .populate('rejectedKitchens', 'name')
+    .populate('rejectionHistory.kitchenId', 'name phone');
 
   return { totalCount, data };
 };
@@ -164,7 +167,16 @@ const updateOrderStatus = async (orderId, status, updatedFields = {}) => {
     orderId,
     { status, ...updatedFields },
     { new: true }
-  );
+  )
+    .populate('parentId', 'name email phone')
+    .populate('babyId', 'name ageInMonths allergies')
+    .populate('items.mealId', 'name price imageUrl images nutritionalInfo discountedPrice category')
+    .populate('items.productId', 'name price imageUrl images discountedPrice')
+    .populate('kitchenId', 'name phone address')
+    .populate('deliveryId', 'name phone')
+    .populate('cancelledBy', 'name role email phone')
+    .populate('rejectedKitchens', 'name')
+    .populate('rejectionHistory.kitchenId', 'name phone');
 };
 
 /**
@@ -174,10 +186,13 @@ const getOrderById = async (orderId) => {
   return await Order.findById(orderId)
     .populate('parentId', 'name email phone')
     .populate('babyId', 'name ageInMonths allergies')
-    .populate('items.mealId', 'name price imageUrl nutritionalInfo discountedPrice category')
-    .populate('items.productId', 'name price imageUrl discountedPrice')
+    .populate('items.mealId', 'name price imageUrl images nutritionalInfo discountedPrice category')
+    .populate('items.productId', 'name price imageUrl images discountedPrice')
     .populate('kitchenId', 'name phone address')
-    .populate('deliveryId', 'name phone');
+    .populate('deliveryId', 'name phone')
+    .populate('cancelledBy', 'name role email phone')
+    .populate('rejectedKitchens', 'name')
+    .populate('rejectionHistory.kitchenId', 'name phone');
 };
 
 /**

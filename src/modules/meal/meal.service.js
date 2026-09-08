@@ -46,11 +46,11 @@ const getAllMeals = async (query = {}) => {
   const skip = (page - 1) * limit;
 
   const filters = {};
-  
+
   if (query.ageGroup && query.ageGroup !== "All Ages") {
     filters.suitableForAgeGroup = query.ageGroup;
   }
-  
+
   if (query.category && query.category !== "All") {
     filters.category = query.category;
   }
@@ -93,7 +93,7 @@ const getAllMeals = async (query = {}) => {
     sortObj = { price: -1 };
   } else if (query.sortBy === "Popularity") {
     // Fake popularity by keeping createdAt or adding another field
-    sortObj = { createdAt: 1 }; 
+    sortObj = { createdAt: 1 };
   }
 
   const count = await Meal.countDocuments(filters);
@@ -108,7 +108,7 @@ const getAllMeals = async (query = {}) => {
   // Need to make sure Review is loaded. It's required below as const Review = require('../review/review.model');
   // But wait, Review is required at line 109. Let me move the requirement up or just use mongoose.model('Review')
   const ReviewModel = mongooseObj.models.Review || require('../review/review.model');
-  
+
   const reviewsInfo = await ReviewModel.aggregate([
     { $match: { mealId: { $in: mealIds }, targetType: 'meal' } },
     { $group: { _id: '$mealId', averageRating: { $avg: '$rating' }, reviewsCount: { $sum: 1 } } }
@@ -221,7 +221,7 @@ const deleteMeal = async (id) => {
 const getMealFilters = async () => {
   const categories = await Meal.distinct('category');
   const ageGroups = await Meal.distinct('suitableForAgeGroup');
-  
+
   return {
     categories: categories.filter(Boolean),
     ageGroups: ageGroups.filter(Boolean)
@@ -282,7 +282,7 @@ const getRecommendedMeals = async (babyId) => {
           score += 5;
         }
       }
-      
+
       if (lowerSymptoms.includes('teething')) {
         if (lowerTags.includes('soft') || lowerTags.includes('cold') || lowerTags.includes('puree')) {
           score += 5;

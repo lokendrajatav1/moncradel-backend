@@ -79,6 +79,9 @@ const orderSchema = new mongoose.Schema({
     default: 'cod'
   },
   deliveryAddress: {
+    title: String,
+    name: String,
+    flat: String,
     street: String,
     city: String,
     state: String,
@@ -91,7 +94,7 @@ const orderSchema = new mongoose.Schema({
   },
   distanceKm: {
     type: Number,
-    default: function() {
+    default: function () {
       // Mock distance for now (between 1.0 and 8.0)
       return (Math.random() * 7 + 1).toFixed(1);
     }
@@ -113,6 +116,30 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  cancelledBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  cancelledByRole: {
+    type: String,
+    enum: ['parent', 'kitchen', 'admin', 'delivery', 'system'],
+    default: null
+  },
+  rejectedKitchens: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  rejectionHistory: [{
+    kitchenId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    reason: String,
+    rejectedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   couponCode: {
     type: String,
     default: ''

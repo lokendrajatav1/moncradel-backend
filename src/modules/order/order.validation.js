@@ -15,10 +15,14 @@ const createOrderSchema = z.object({
     specialInstructions: z.string().optional()
   })).min(1, "Order must have at least one item"),
   deliveryAddress: z.object({
-    street: z.string(),
-    city: z.string(),
-    state: z.string(),
-    zipCode: z.string()
+    title: z.string().optional(),
+    name: z.string().optional(),
+    flat: z.string().optional(),
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    phone: z.string().optional()
   }).optional(),
   specialInstructions: z.string().optional(),
   couponCode: z.string().optional(),
@@ -28,6 +32,9 @@ const createOrderSchema = z.object({
 const updateOrderSchema = z.object({
   status: z.string().optional(),
   deliveryAddress: z.object({
+    title: z.string().optional(),
+    name: z.string().optional(),
+    flat: z.string().optional(),
     street: z.string().optional(),
     city: z.string().optional(),
     state: z.string().optional(),
@@ -35,8 +42,8 @@ const updateOrderSchema = z.object({
     phone: z.string().optional()
   }).optional(),
   cancellationReason: z.string().optional(),
-  kitchenId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
-  deliveryId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").optional(),
+  kitchenId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").nullable().optional(),
+  deliveryId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format").nullable().optional(),
   otp: z.string().optional()
 });
 

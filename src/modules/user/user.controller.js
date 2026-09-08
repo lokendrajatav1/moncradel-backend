@@ -88,7 +88,7 @@ const updateUserProfile = async (req, res) => {
       if (!profileData) {
         profileData = new Model({ user: req.user._id });
       }
-      
+
       // Prevent updating system fields
       const updateData = { ...req.body };
       delete updateData.user;
@@ -110,9 +110,9 @@ const updateUserProfile = async (req, res) => {
   } catch (error) {
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
-      return res.status(400).json({ 
-        success: false, 
-        message: `${field.charAt(0).toUpperCase() + field.substring(1)} already exists. Please use a different ${field}.` 
+      return res.status(400).json({
+        success: false,
+        message: `${field.charAt(0).toUpperCase() + field.substring(1)} already exists. Please use a different ${field}.`
       });
     }
     res.status(500).json({ success: false, message: error.message });
@@ -125,29 +125,29 @@ const updateUserProfile = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const query = { ...req.query };
-    
+
     // Handle verificationStatus filtering
     if (query.verificationStatus) {
       const { verificationStatus } = query;
       delete query.verificationStatus;
-      
+
       let profileQuery = { verificationStatus };
       if (verificationStatus === 'pending') {
         profileQuery = { $or: [{ verificationStatus: 'pending' }, { verificationStatus: { $exists: false } }] };
       }
-      
+
       const [doctors, kitchens, deliveries] = await Promise.all([
         require('../doctor/doctor.model').find(profileQuery).select('user'),
         require('../kitchenPartner/kitchenPartner.model').find(profileQuery).select('user'),
         require('../deliveryPartner/deliveryPartner.model').find(profileQuery).select('user')
       ]);
-      
+
       const userIds = [
         ...doctors.map(d => d.user),
         ...kitchens.map(k => k.user),
         ...deliveries.map(d => d.user)
       ];
-      
+
       query._id = { in: userIds };
     }
 
@@ -159,11 +159,11 @@ const getAllUsers = async (req, res) => {
       else if (user.role === 'doctor') profileData = await Doctor.findOne({ user: user._id }).select('verificationStatus');
       else if (user.role === 'delivery') profileData = await DeliveryPartner.findOne({ user: user._id }).select('verificationStatus');
       else if (user.role === 'kitchen') profileData = await KitchenPartner.findOne({ user: user._id }).select('verificationStatus');
-      
+
       user.verificationStatus = profileData?.verificationStatus || 'N/A';
       return user;
     }));
-    
+
     res.status(200).json({ success: true, count: totalCount, data: users });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -181,7 +181,7 @@ const getUser = async (req, res) => {
     }
 
     const user = userDoc.toObject();
-    
+
     // We need to get the model
     let profileData = null;
     if (user.role === 'customer' || user.role === 'parent') profileData = await require('../customer/customer.model').findOne({ user: user._id });
@@ -220,7 +220,7 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const updateData = { ...req.body };
-    
+
     // Handle avatar upload if present
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'avatars');
@@ -238,9 +238,9 @@ const updateUser = async (req, res) => {
   } catch (error) {
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
-      return res.status(400).json({ 
-        success: false, 
-        message: `${field.charAt(0).toUpperCase() + field.substring(1)} already exists. Please use a different ${field}.` 
+      return res.status(400).json({
+        success: false,
+        message: `${field.charAt(0).toUpperCase() + field.substring(1)} already exists. Please use a different ${field}.`
       });
     }
     res.status(500).json({ success: false, message: error.message });
@@ -289,10 +289,10 @@ const verifyUser = async (req, res) => {
 const createUserByAdmin = async (req, res) => {
   try {
     const { name, email, password, role, phone } = req.body;
-    
+
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ success: false, message: 'User with this email already exists' });
-    
+
     const phoneExists = await User.findOne({ phone });
     if (phoneExists) return res.status(400).json({ success: false, message: 'User with this phone number already exists' });
 
