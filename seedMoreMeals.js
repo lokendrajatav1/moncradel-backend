@@ -36,8 +36,8 @@ const generateMeals = () => {
       },
       price: price,
       discountedPrice: discountedPrice,
-      imageUrl: "/images/meal_food.png",
-      images: ["/images/meal_food.png"]
+      imageUrl: "",
+      images: []
     });
   }
   

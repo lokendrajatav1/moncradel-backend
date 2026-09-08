@@ -105,12 +105,16 @@ const getOrders = async (req, res) => {
         const kitchenFilter = {
           $or: [
             { kitchenId: req.user._id },
-            { kitchenId: { $exists: false } },
-            { kitchenId: null }
+            {
+              $and: [
+                { $or: [{ kitchenId: { $exists: false } }, { kitchenId: null }] },
+                { rejectedKitchens: { $ne: req.user._id } }
+              ]
+            }
           ]
         };
         if (filters.$or) {
-          filters.$and = [ { $or: filters.$or }, kitchenFilter ];
+          filters.$and = [{ $or: filters.$or }, kitchenFilter];
           delete filters.$or;
         } else {
           filters.$or = kitchenFilter.$or;
@@ -123,13 +127,13 @@ const getOrders = async (req, res) => {
           ]
         };
         if (filters.$or) {
-          filters.$and = [ { $or: filters.$or }, deliveryFilter ];
+          filters.$and = [{ $or: filters.$or }, deliveryFilter];
           delete filters.$or;
         } else {
           filters.$or = deliveryFilter.$or;
         }
       }
-      
+
       // Filter out online prepaid orders that are NOT paid yet from everyone EXCEPT parents.
       // Parents should still see their pending/failed online orders so they can track or retry.
       if (req.user.role !== 'parent') {
@@ -139,11 +143,11 @@ const getOrders = async (req, res) => {
             { paymentMethod: { $in: ['upi', 'card'] }, paymentStatus: 'paid' }
           ]
         };
-        
+
         if (filters.$and) {
           filters.$and.push(validPaymentFilter);
         } else if (filters.$or) {
-          filters.$and = [ { $or: filters.$or }, validPaymentFilter ];
+          filters.$and = [{ $or: filters.$or }, validPaymentFilter];
           delete filters.$or;
         } else {
           Object.assign(filters, validPaymentFilter);
@@ -152,7 +156,7 @@ const getOrders = async (req, res) => {
     }
     // If role is kitchen or delivery, we only want orders that have at least one NON-subscription item
     if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
-       filters['items'] = { $elemMatch: { isSubscription: { $ne: true } } };
+      filters['items'] = { $elemMatch: { isSubscription: { $ne: true } } };
     }
 
     const { totalCount, data: orders } = await orderService.getOrders(filters, req.query);
@@ -160,11 +164,11 @@ const getOrders = async (req, res) => {
     // Strip subscription items from the response for kitchen and delivery
     let processedOrders = orders;
     if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
-       processedOrders = orders.map(order => {
-          const orderObj = order.toObject ? order.toObject() : order;
-          orderObj.items = orderObj.items.filter(item => !item.isSubscription);
-          return orderObj;
-       });
+      processedOrders = orders.map(order => {
+        const orderObj = order.toObject ? order.toObject() : order;
+        orderObj.items = orderObj.items.filter(item => !item.isSubscription);
+        return orderObj;
+      });
     }
 
     res.status(200).json({ success: true, count: processedOrders.length, total: totalCount, data: processedOrders });
@@ -181,8 +185,64 @@ const updateOrderStatus = async (req, res) => {
     const { status, deliveryAddress, cancellationReason, kitchenId, deliveryId, otp } = req.body;
     let updatedFields = {};
 
-    if (status === 'cancelled' && cancellationReason) {
-      updatedFields.cancellationReason = cancellationReason;
+    const existingOrder = await Order.findById(req.params.id);
+    if (!existingOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    let finalStatus = status;
+
+    // Multi-Kitchen Rejection Logic:
+    // If a kitchen declines a PENDING order, pass/forward it to other available kitchens instead of cancelling the customer's whole order!
+    if (req.user && req.user.role === 'kitchen' && existingOrder.status === 'pending' && status === 'cancelled') {
+      const User = require('../user/user.model');
+
+      const newRejectedKitchens = [...(existingOrder.rejectedKitchens || []), req.user._id];
+      const newRejectionHistory = [
+        ...(existingOrder.rejectionHistory || []),
+        {
+          kitchenId: req.user._id,
+          reason: cancellationReason || 'Kitchen unable to prepare at this time',
+          rejectedAt: new Date()
+        }
+      ];
+
+      updatedFields.rejectedKitchens = newRejectedKitchens;
+      updatedFields.rejectionHistory = newRejectionHistory;
+      updatedFields.kitchenId = null; // ensure unassigned
+
+      // Check if there are other kitchens in the system that haven't rejected this order yet
+      const otherAvailableKitchens = await User.find({
+        role: 'kitchen',
+        _id: { $nin: newRejectedKitchens }
+      }).select('_id name');
+
+      if (otherAvailableKitchens.length > 0) {
+        // Keep order as 'pending' so next kitchen can accept it!
+        finalStatus = 'pending';
+
+        // Notify other kitchens via socket.io
+        const io = req.app.get('io');
+        if (io) {
+          io.emit('new_order', { orderId: existingOrder._id, status: 'pending', forwarded: true });
+        }
+      } else {
+        // All kitchens have rejected or none left -> Auto-cancel
+        finalStatus = 'cancelled';
+        updatedFields.cancellationReason = cancellationReason || 'All available kitchens were unable to fulfill this order';
+        updatedFields.cancelledBy = req.user._id;
+        updatedFields.cancelledByRole = 'kitchen';
+      }
+    } else if (status === 'cancelled') {
+      if (cancellationReason) {
+        updatedFields.cancellationReason = cancellationReason;
+      }
+      if (req.user) {
+        updatedFields.cancelledBy = req.user._id;
+        updatedFields.cancelledByRole = req.user.role;
+      } else {
+        updatedFields.cancelledByRole = 'system';
+      }
     }
 
     const timeFields = {
@@ -193,8 +253,8 @@ const updateOrderStatus = async (req, res) => {
       cancelled: 'cancelledAt'
     };
 
-    if (timeFields[status]) {
-      updatedFields[timeFields[status]] = new Date();
+    if (timeFields[finalStatus]) {
+      updatedFields[timeFields[finalStatus]] = new Date();
     }
 
     // Allow admin to update delivery address
@@ -204,22 +264,26 @@ const updateOrderStatus = async (req, res) => {
 
     // Allow admin to explicitly assign kitchen and delivery
     if (req.user && req.user.role === 'admin') {
-      if (kitchenId) updatedFields.kitchenId = kitchenId;
-      if (deliveryId) {
-        updatedFields.deliveryId = deliveryId;
-        
+      if (kitchenId !== undefined) {
+        updatedFields.kitchenId = kitchenId ? kitchenId : null;
+      }
+      if (deliveryId !== undefined) {
+        updatedFields.deliveryId = deliveryId ? deliveryId : null;
+
         // Notify the delivery boy about the assignment if it's new
-        const currentOrder = await Order.findById(req.params.id);
-        if (!currentOrder.deliveryId || currentOrder.deliveryId.toString() !== deliveryId.toString()) {
-          try {
-            await addNotificationJob({
-              userId: deliveryId,
-              title: 'New Order Assigned',
-              message: `You have been assigned to deliver order #${req.params.id.substring(0, 6)}`,
-              orderId: req.params.id
-            });
-          } catch (err) {
-            console.error("Failed to queue assignment notification", err);
+        if (deliveryId) {
+          const currentOrder = await Order.findById(req.params.id);
+          if (!currentOrder.deliveryId || currentOrder.deliveryId.toString() !== deliveryId.toString()) {
+            try {
+              await addNotificationJob({
+                userId: deliveryId,
+                title: 'New Order Assigned',
+                message: `You have been assigned to deliver order #${req.params.id.substring(0, 6)}`,
+                orderId: req.params.id
+              });
+            } catch (err) {
+              console.error("Failed to queue assignment notification", err);
+            }
           }
         }
       }
@@ -279,15 +343,15 @@ const updateOrderStatus = async (req, res) => {
       }
     }
 
-    const order = await orderService.updateOrderStatus(req.params.id, status, updatedFields);
+    const order = await orderService.updateOrderStatus(req.params.id, finalStatus, updatedFields);
 
     // Restore stock if cancelled
-    if (status === 'cancelled') {
+    if (finalStatus === 'cancelled') {
       await orderService.restoreProductStock(req.params.id);
     }
 
     // Notify delivery partner when order is ready to be picked up
-    if (status === 'ready' && order.deliveryId) {
+    if (finalStatus === 'ready' && order.deliveryId) {
       try {
         await addNotificationJob({
           userId: order.deliveryId,
@@ -303,10 +367,16 @@ const updateOrderStatus = async (req, res) => {
     // Broadcast status update to the specific order room
     const io = req.app.get('io');
     if (io) {
-      io.to(`order_${order._id}`).emit('status_update', { orderId: order._id, status, proof: updatedFields.proofOfDeliveryImageUrl });
+      io.to(`order_${order._id}`).emit('status_update', { orderId: order._id, status: finalStatus, proof: updatedFields.proofOfDeliveryImageUrl });
     }
 
-    res.status(200).json({ success: true, data: order });
+    res.status(200).json({
+      success: true,
+      message: finalStatus === 'pending' && status === 'cancelled'
+        ? 'Order declined and forwarded to other available kitchens'
+        : 'Order status updated successfully',
+      data: order
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -318,7 +388,7 @@ const updateOrderStatus = async (req, res) => {
 const getOrderById = async (req, res) => {
   try {
     const orderDoc = await orderService.getOrderById(req.params.id);
-    
+
     if (!orderDoc) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
@@ -326,9 +396,9 @@ const getOrderById = async (req, res) => {
     let order = orderDoc.toObject ? orderDoc.toObject() : orderDoc;
 
     if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
-       order.items = order.items.filter(item => !item.isSubscription);
+      order.items = order.items.filter(item => !item.isSubscription);
     }
-    
+
     res.status(200).json({ success: true, data: order });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

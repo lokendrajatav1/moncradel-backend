@@ -9,9 +9,9 @@ class APIFeatures {
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach(el => delete queryObj[el]);
 
-    // Advanced filtering for gte, gt, lte, lt, in
+    // Advanced filtering for gte, gt, lte, lt, in, regex, options (avoid adding double $)
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt|in|regex|options)\b/g, match => `$${match}`);
+    queryStr = queryStr.replace(/(?<!\$)\b(gte|gt|lte|lt|in|regex|options)\b/g, match => `$${match}`);
 
     this.query = this.query.find(JSON.parse(queryStr));
     return this;

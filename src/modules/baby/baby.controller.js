@@ -23,28 +23,33 @@ const addBaby = async (req, res) => {
   }
 };
 
-// @desc    Get babies based on user role
+// @desc    Get babies based on user role with optional pagination, search, and filters
 // @route   GET /api/babies
 // @access  Private
 const getBabies = async (req, res) => {
   try {
-    let babies = [];
+    const query = { ...req.query };
 
-    if (req.user.role === 'admin') {
-      if (req.query.parentId) {
-        babies = await babyService.getBabiesByParent(req.query.parentId);
-      } else {
-        babies = await babyService.getAllBabies();
-      }
-    } else if (req.user.role === 'doctor') {
-      babies = await babyService.getBabiesByDoctor(req.user._id);
+    // Role-based scoping
+    if (req.user.role === 'doctor') {
+      query.assignedDoctorId = req.user._id;
     } else if (req.user.role === 'parent') {
-      babies = await babyService.getBabiesByParent(req.user._id);
-    } else {
+      query.parentId = req.user._id;
+    } else if (req.user.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Unauthorized to view babies' });
     }
 
-    res.status(200).json({ success: true, count: babies.length, data: babies });
+    const result = await babyService.getBabies(query);
+
+    res.status(200).json({
+      success: true,
+      count: result.babies.length,
+      total: result.total,
+      page: result.page,
+      pages: result.pages,
+      limit: result.limit,
+      data: result.babies
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

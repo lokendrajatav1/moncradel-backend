@@ -78,6 +78,16 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
     doctorMap[doc.user.toString()] = doc;
   });
 
+  const Review = require('../review/review.model');
+  const appointmentIds = rawData.map(app => app._id);
+  const reviews = await Review.find({ appointmentId: { $in: appointmentIds } }).lean();
+  const reviewMap = {};
+  reviews.forEach(rev => {
+    if (rev.appointmentId) {
+      reviewMap[rev.appointmentId.toString()] = rev;
+    }
+  });
+
   const data = rawData.map(app => {
     if (app.doctorId && doctorMap[app.doctorId._id.toString()]) {
       const docInfo = doctorMap[app.doctorId._id.toString()];
@@ -86,6 +96,10 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
       app.doctorId.clinicAddress = docInfo.clinicAddress;
       app.doctorId.experienceYears = docInfo.experienceYears;
       app.doctorId.consultationFee = docInfo.consultationFee;
+    }
+    if (reviewMap[app._id.toString()]) {
+      app.review = reviewMap[app._id.toString()];
+      app.rating = reviewMap[app._id.toString()].rating;
     }
     return app;
   });
