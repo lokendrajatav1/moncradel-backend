@@ -20,6 +20,11 @@ const createAppointment = async (parentId, appointmentData) => {
     notes
   });
 
+  // Automatically assign this doctor to the baby's profile
+  if (babyId && doctorId) {
+    await Baby.findByIdAndUpdate(babyId, { assignedDoctorId: doctorId });
+  }
+
   return appointment;
 };
 
@@ -64,7 +69,7 @@ const getAppointments = async (userRole, userId, queryString = {}) => {
   features.sort().paginate();
 
   const rawData = await features.query
-    .populate('babyId', 'name ageInMonths')
+    .populate('babyId', 'name ageInMonths avatar')
     .populate('doctorId', 'name avatar phone')
     .populate('parentId', 'name phone')
     .lean();

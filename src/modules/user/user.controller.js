@@ -126,6 +126,16 @@ const getAllUsers = async (req, res) => {
   try {
     const query = { ...req.query };
 
+    // Handle search query
+    if (query.search) {
+      query.$or = [
+        { name: { regex: query.search, options: 'i' } },
+        { email: { regex: query.search, options: 'i' } },
+        { phone: { regex: query.search, options: 'i' } }
+      ];
+      delete query.search;
+    }
+
     // Handle verificationStatus filtering
     if (query.verificationStatus) {
       const { verificationStatus } = query;

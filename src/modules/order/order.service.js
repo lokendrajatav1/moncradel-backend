@@ -76,11 +76,35 @@ const createOrder = async (orderData, parentId) => {
     }
   }
 
+  // Fetch admin-configured shipping and GST settings
+  // Defaults are 0 — no charges applied until admin configures them
+  let shippingFee = 0;
+  let freeThreshold = 0;
+  let gstRate = 0;
+  try {
+    const Setting = require('../setting/setting.model');
+    const [baseFeeS, freeThreshS, gstRateS] = await Promise.all([
+      Setting.findOne({ key: 'base_delivery_fee' }),
+      Setting.findOne({ key: 'free_delivery_threshold' }),
+      Setting.findOne({ key: 'gst_rate' })
+    ]);
+    if (baseFeeS?.value) shippingFee = parseFloat(baseFeeS.value);
+    if (freeThreshS?.value) freeThreshold = parseFloat(freeThreshS.value);
+    if (gstRateS?.value) gstRate = parseFloat(gstRateS.value);
+  } catch (e) {
+    console.error('Could not load settings, using defaults', e);
+  }
+
+  // If freeThreshold is 0 (not set), shipping is always free
+  const shipping = freeThreshold > 0 && finalPrice < freeThreshold ? shippingFee : 0;
+  const taxAmount = parseFloat(((finalPrice * gstRate) / 100).toFixed(2));
+  const grandTotal = Math.round(finalPrice + shipping + taxAmount);
+
   let isOtpRequired = false;
   let deliveryOtp = undefined;
 
   // Rule: OTP required if it contains a product OR total price >= 1000
-  if (hasProduct || finalPrice >= 1000) {
+  if (hasProduct || grandTotal >= 1000) {
     isOtpRequired = true;
     deliveryOtp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
   }
@@ -113,7 +137,7 @@ const createOrder = async (orderData, parentId) => {
       babyId,
       deliverySchedule: subscriptionSchedules,
       deliveryAddressId: addressId,
-      totalAmount: Math.round(finalPrice),
+      totalAmount: grandTotal,
     }, parentId);
   }
 
@@ -121,9 +145,11 @@ const createOrder = async (orderData, parentId) => {
     ...orderData,
     parentId,
     // We store ALL items in the order so the user sees what they paid for
-    items: orderData.items, 
+    items: orderData.items,
     mealSubscriptionId: createdSubscription ? createdSubscription._id : null,
-    totalAmount: Math.round(finalPrice),
+    totalAmount: grandTotal,
+    shippingFee: shipping,
+    taxAmount,
     couponCode: appliedCouponCode,
     discountAmount: Math.round(discountAmount),
     isOtpRequired,

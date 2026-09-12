@@ -89,7 +89,7 @@ const updateBaby = async (req, res) => {
     console.log("====== UPDATE BABY DEBUG ======");
     console.log("req.body:", req.body);
     console.log("req.file:", req.file ? "File is present: " + req.file.originalname : "No file found in request");
-    
+
     const updateData = { ...req.body };
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer, 'avatars');
@@ -114,7 +114,7 @@ const deleteBaby = async (req, res) => {
     if (req.user.role !== 'admin' && req.user.role !== 'parent') {
       return res.status(403).json({ success: false, message: 'Unauthorized to delete this baby' });
     }
-    
+
     // Ensure parent can only delete their own baby profile
     if (req.user.role === 'parent' && baby.parentId) {
       const parentIdStr = baby.parentId._id ? baby.parentId._id.toString() : baby.parentId.toString();
