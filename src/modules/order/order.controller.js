@@ -293,6 +293,49 @@ const updateOrderStatus = async (req, res) => {
     if (req.user && status === 'preparing' && req.user.role === 'kitchen') {
       updatedFields.kitchenId = req.user._id;
     }
+
+    // --- CALCULATE REAL DISTANCE ---
+    // If a kitchen is newly assigned (either by kitchen accepting or admin assigning), calculate distance
+    const finalKitchenId = updatedFields.kitchenId || existingOrder.kitchenId;
+    let distanceCalculated = false;
+
+    if (finalKitchenId) {
+      if (updatedFields.kitchenId || !existingOrder.distanceKm) {
+        const KitchenPartner = require('../kitchenPartner/kitchenPartner.model');
+        const kitchenProfile = await KitchenPartner.findOne({ user: finalKitchenId });
+
+        const kCoords = kitchenProfile?.location?.coordinates;
+        const cCoords = existingOrder.deliveryAddress?.location?.coordinates;
+
+        if (kCoords && kCoords.length === 2 && kCoords[0] !== 0 && cCoords && cCoords.length === 2 && cCoords[0] !== 0) {
+          const [kLon, kLat] = kCoords;
+          const [cLon, cLat] = cCoords;
+
+          const R = 6371; // km
+          const dLat = (cLat - kLat) * Math.PI / 180;
+          const dLon = (cLon - kLon) * Math.PI / 180;
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(kLat * Math.PI / 180) * Math.cos(cLat * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const straightLineDistance = R * c;
+          
+          // Multiply by 1.4 to approximate actual road distance
+          const roadDistance = straightLineDistance * 1.4;
+
+          // Set distance, min 1.0 km
+          updatedFields.distanceKm = Math.max(1.0, parseFloat(roadDistance.toFixed(1)));
+          distanceCalculated = true;
+        }
+      }
+    }
+
+    // Fallback: If distance couldn't be calculated (missing coordinates), give a default min 1.5 km to save rider loss
+    if (!distanceCalculated && !existingOrder.distanceKm) {
+      updatedFields.distanceKm = 1.5;
+    }
+    // -------------------------------
+
     // If delivery picks it up, assign deliveryId
     if (req.user && status === 'out_for_delivery' && req.user.role === 'delivery') {
       updatedFields.deliveryId = req.user._id;
@@ -321,12 +364,39 @@ const updateOrderStatus = async (req, res) => {
         updatedFields.proofOfDeliveryImageUrl = uploadResult.secure_url;
       }
 
-      // Auto-generate Earning for the delivery driver (Fixed ₹50 for now)
+      // If it's a COD order, mark it as paid on the order itself
+      if (orderToDeliver.paymentMethod === 'cod') {
+        updatedFields.paymentStatus = 'paid';
+      }
+
+      // Auto-generate Earning for the delivery driver
+      // Formula: Admin-configured base pay + per km rate (fallback: ₹25 base + ₹5/km)
       try {
+        const Setting = require('../setting/setting.model');
+        const [basePaySetting, perKmSetting] = await Promise.all([
+          Setting.findOne({ key: 'rider_base_pay' }),
+          Setting.findOne({ key: 'rider_per_km_rate' })
+        ]);
+
+        const BASE_PAY = parseFloat(basePaySetting?.value || '25');
+        const PER_KM_RATE = parseFloat(perKmSetting?.value || '5');
+        
+        // Use updated distance if just calculated, else use existing distance
+        const distanceKm = updatedFields.distanceKm || existingOrder.distanceKm || 0;
+        
+        const distanceBonus = parseFloat((distanceKm * PER_KM_RATE).toFixed(2));
+        const totalEarning = parseFloat((BASE_PAY + distanceBonus).toFixed(2));
+
+        const earningNotes = distanceKm > 0
+          ? `Base ₹${BASE_PAY} + Distance ${distanceKm.toFixed(1)}km × ₹${PER_KM_RATE} = ₹${totalEarning}`
+          : `Base pay ₹${BASE_PAY}`;
+
         await Earning.create({
-          deliveryId: req.user._id,
+          staffId: req.user._id,
+          staffRole: 'delivery',
           orderId: req.params.id,
-          amount: 50,
+          amount: totalEarning,
+          notes: earningNotes,
           status: 'pending'
         });
 
@@ -368,6 +438,11 @@ const updateOrderStatus = async (req, res) => {
     const io = req.app.get('io');
     if (io) {
       io.to(`order_${order._id}`).emit('status_update', { orderId: order._id, status: finalStatus, proof: updatedFields.proofOfDeliveryImageUrl });
+
+      // If order is ready, notify all delivery partners
+      if (finalStatus === 'ready') {
+        io.emit('order_ready', { orderId: order._id });
+      }
     }
 
     res.status(200).json({
@@ -397,6 +472,15 @@ const getOrderById = async (req, res) => {
 
     if (req.user && (req.user.role === 'kitchen' || req.user.role === 'delivery')) {
       order.items = order.items.filter(item => !item.isSubscription);
+    }
+
+    // Inject KitchenPartner location if a kitchen is assigned
+    if (order.kitchenId && order.kitchenId._id) {
+      const KitchenPartner = require('../kitchenPartner/kitchenPartner.model');
+      const kitchenProfile = await KitchenPartner.findOne({ user: order.kitchenId._id });
+      if (kitchenProfile && kitchenProfile.location) {
+        order.kitchenId.location = kitchenProfile.location;
+      }
     }
 
     res.status(200).json({ success: true, data: order });

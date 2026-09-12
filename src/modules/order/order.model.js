@@ -86,7 +86,11 @@ const orderSchema = new mongoose.Schema({
     city: String,
     state: String,
     zipCode: String,
-    phone: String
+    phone: String,
+    location: {
+      type: { type: String, enum: ['Point'], default: 'Point' },
+      coordinates: { type: [Number] }
+    }
   },
   specialInstructions: {
     type: String,
@@ -94,10 +98,7 @@ const orderSchema = new mongoose.Schema({
   },
   distanceKm: {
     type: Number,
-    default: function () {
-      // Mock distance for now (between 1.0 and 8.0)
-      return (Math.random() * 7 + 1).toFixed(1);
-    }
+    default: 0
   },
   proofOfDeliveryImageUrl: {
     type: String,
@@ -110,6 +111,14 @@ const orderSchema = new mongoose.Schema({
   totalAmount: {
     type: Number,
     required: true,
+    default: 0
+  },
+  shippingFee: {
+    type: Number,
+    default: 0
+  },
+  taxAmount: {
+    type: Number,
     default: 0
   },
   cancellationReason: {
